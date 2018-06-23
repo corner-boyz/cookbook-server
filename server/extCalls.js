@@ -17,7 +17,7 @@ const getRecipesByIngredients = (ingredients) => {
   }
 
   axios.get(url + q,
-    {'headers': {'X-Mashape-Key': 'B3bHYE2wj1msh8Wo6kABp93v6qjQp1H7VO8jsnjCmc9KRTNxCz',
+    {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
     'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
     .then((results) => {
       console.log('SUCCESS finding recipes:', results.data);
@@ -31,7 +31,7 @@ const getRecipeById = (id) => {
   const lastHalf = '/information?includeNutrition=true'
   
   axios.get(firstHalf + id + lastHalf,
-    {'headers': {'X-Mashape-Key': 'B3bHYE2wj1msh8Wo6kABp93v6qjQp1H7VO8jsnjCmc9KRTNxCz',
+    {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
     'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
     .then((results) => {
       console.log('SUCCESS getting recipe:', results.data);
