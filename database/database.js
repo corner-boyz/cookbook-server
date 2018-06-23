@@ -34,11 +34,11 @@ const createTables = () => {
     PRIMARY KEY(ingredient, pantryId)
   );`
   knex.raw(query).then((results) => {
-    console.log('SUCCESS creating tables:', results);
+    console.log('SUCCESS connecting to DB:', results);
   }).catch((err) => {
-    console.error('ERROR creating tables:', err);
+    console.error('ERROR connecting to DB:', err);
   })
 };
 createTables();
 
-module.exports.knex = knex;
+module.exports.db = knex;
