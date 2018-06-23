@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const dbHelpers = require('../database/dbHelpers');
+const extCalls = require('./extCalls');
 
 const app = express();
 
