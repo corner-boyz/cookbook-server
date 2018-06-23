@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const dbHelpers = require('../database/dbHelpers');
-dbHelpers.selectUsers();
+
 const app = express();
 
 const { parse, combine } = require('recipe-ingredient-parser');
