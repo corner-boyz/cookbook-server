@@ -9,7 +9,28 @@ app.use(morgan('dev'));
 
 app.get('/api/ingredients', (req, res) => {
   // This is just here temporarily to test the server
-  let ingredients = ['Tomato', 'Lettuce', 'Avocado'];
+  let ingredients = [
+    {
+      ingredient: 'Tomato',
+      quantity: 5,
+      unit: null,
+    },
+    {
+      ingredient: 'Apple',
+      quantity: 10,
+      unit: null,
+    },
+    {
+      ingredient: 'Avocado',
+      quantity: 3,
+      unit: null,
+    },
+    {
+      ingredient: 'Bananas',
+      quantity: 12,
+      unit: null,
+    }
+  ];
   res.send(ingredients);
 });
 
