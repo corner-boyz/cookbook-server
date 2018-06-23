@@ -1,13 +1,13 @@
 {
-  "name": "tweetmap",
+  "name": "cookbook",
   "version": "1.0.0",
-  "description": "Mapping tweets",
+  "description": "Pantry tracker and recipe maker",
+  "author": "Calvin Chui, Joseph Oh, Carter Robinson",
   "main": "client.jsx",
   "scripts": {
     "start": "node server/server.js",
     "server": "nodemon server/server.js"
   },
-  "author": "Calvin Chui, Joseph Oh, Carter Robinson",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
