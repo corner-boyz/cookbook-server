@@ -60,8 +60,10 @@ app.post('/api/parse', (req, res) => {
   const { ingredients } = req.body;
   let parsed = ingredients.map(ingredient => {
     let obj = parse(ingredient);
-    obj.ingredient = pluralize.singular(obj.ingredient);
-    if (obj.unit) {
+    if (!obj.unit) {
+      obj.ingredient = pluralize.plural(obj.ingredient);
+    } else {
+      obj.ingredient = pluralize.singular(obj.ingredient);
       obj.unit = pluralize.singular(obj.unit);
     }
     return obj;
