@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
+const dbHelpers = require('../database/dbHelpers');
+dbHelpers.selectUsers();
 const app = express();
 
 app.use(bodyParser.json());
