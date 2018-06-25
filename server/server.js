@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const dbHelpers = require('../database/dbHelpers');
 const extCalls = require('./extCalls');
 
+const testRecipes = require('./testRecipes.json');
+
 const app = express();
 
 const { parse, combine } = require('recipe-ingredient-parser');
@@ -69,6 +71,10 @@ app.post('/api/parse', (req, res) => {
   });
   res.send(parsed);
 });
+
+app.post('/api/recipes', (req, res) => {
+  res.send(testRecipes);
+})
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
