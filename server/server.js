@@ -36,7 +36,7 @@ app.post('/api/combine', (req, res) => {
   // Converts the old ingredients array into an object
   let ingredientsObj = {};
   ingredients.forEach(ingredient => {
-    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit}
+    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit }
   });
   // Compares elements from the new ingredients array to old ingredients and converts as necessary
   let results = [];
