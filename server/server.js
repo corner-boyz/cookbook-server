@@ -5,8 +5,6 @@ const morgan = require('morgan');
 const dbHelpers = require('../database/dbHelpers');
 const extCalls = require('./extCalls');
 
-const testRecipes = require('./testRecipes.json');
-
 const app = express();
 
 const { parse, combine } = require('recipe-ingredient-parser');
@@ -18,8 +16,8 @@ app.use(morgan('dev'));
 
 app.get('/api/ingredients', (req, res) => {
   // This is just here temporarily to test the server
-  let ingredients = ['Tomato', 'Lettuce', 'Avocado'];
-  res.send(ingredients);
+  const testIngredients = require('../database/testIngredients.json');
+  res.send(testIngredients);
 });
 
 const units = {
@@ -73,6 +71,7 @@ app.post('/api/parse', (req, res) => {
 });
 
 app.post('/api/recipes', (req, res) => {
+  const testRecipes = require('./testRecipes.json');
   res.send(testRecipes);
 })
 
