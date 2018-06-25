@@ -60,11 +60,9 @@ app.post('/api/combine', (req, res) => {
 app.post('/api/parse', (req, res) => {
   const { ingredients } = req.body;
   let parsed = ingredients.map(ingredient => {
-    let obj = parse(ingredient);
-    if (!obj.unit) {
-      obj.ingredient = pluralize.plural(obj.ingredient);
-    } else {
-      obj.ingredient = pluralize.singular(obj.ingredient);
+    let obj = parse(ingredient.toLowerCase());
+    obj.ingredient = pluralize.singular(obj.ingredient);
+    if (obj.unit) {
       obj.unit = pluralize.singular(obj.unit);
     }
     return obj;
