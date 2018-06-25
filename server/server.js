@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const dbHelpers = require('../database/dbHelpers');
+const extCalls = require('./extCalls');
 
 const app = express();
 
@@ -15,29 +16,8 @@ app.use(morgan('dev'));
 
 app.get('/api/ingredients', (req, res) => {
   // This is just here temporarily to test the server
-  let ingredients = [
-    {
-      ingredient: 'Tomato',
-      quantity: 5,
-      unit: null,
-    },
-    {
-      ingredient: 'Apple',
-      quantity: 10,
-      unit: null,
-    },
-    {
-      ingredient: 'Avocado',
-      quantity: 3,
-      unit: null,
-    },
-    {
-      ingredient: 'Bananas',
-      quantity: 12,
-      unit: null,
-    }
-  ];
-  res.send(ingredients);
+  const testIngredients = require('../database/testIngredients.json');
+  res.send(testIngredients);
 });
 
 const units = {
@@ -80,7 +60,7 @@ app.post('/api/combine', (req, res) => {
 app.post('/api/parse', (req, res) => {
   const { ingredients } = req.body;
   let parsed = ingredients.map(ingredient => {
-    let obj = parse(ingredient);
+    let obj = parse(ingredient.toLowerCase());
     obj.ingredient = pluralize.singular(obj.ingredient);
     if (obj.unit) {
       obj.unit = pluralize.singular(obj.unit);
@@ -89,6 +69,12 @@ app.post('/api/parse', (req, res) => {
   });
   res.send(parsed);
 });
+
+app.post('/api/recipes', (req, res) => {
+  //temporarily here to test server and client
+  const testRecipes = require('./testRecipes.json');
+  res.send(testRecipes);
+})
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);

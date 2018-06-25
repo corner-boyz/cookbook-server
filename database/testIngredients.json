@@ -1,0 +1,4 @@
+[ { "ingredient": "apple", "quantity": 12, "unit": "" },
+    { "ingredient": "chicken breast", "quantity": 32, "unit": "lb" },
+    { "ingredient": "pizza", "quantity": 55, "unit": ""},
+    { "ingredient": "blueberry", "quantity": 55, "unit": "" } ]
