@@ -18,8 +18,8 @@ app.use(morgan('dev'));
 
 app.get('/api/ingredients', (req, res) => {
   // This is just here temporarily to test the server
-  let ingredients = ['Tomato', 'Lettuce', 'Avocado'];
-  res.send(ingredients);
+  const testIngredients = require('../database/testIngredients.json');
+  res.send(testIngredients);
 });
 
 const units = {
@@ -71,6 +71,12 @@ app.post('/api/parse', (req, res) => {
   });
   res.send(parsed);
 });
+
+app.post('/api/recipes', (req, res) => {
+  //temporarily here to test server and client
+  const testRecipes = require('./testRecipes.json');
+  res.send(testRecipes);
+})
 
 app.post('/api/signup', (req, res) => {
   console.log(req.body);
