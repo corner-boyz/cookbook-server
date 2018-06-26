@@ -1,0 +1,844 @@
+{
+    "vegetarian": true,
+    "vegan": true,
+    "glutenFree": true,
+    "dairyFree": true,
+    "veryHealthy": false,
+    "cheap": false,
+    "veryPopular": false,
+    "sustainable": false,
+    "weightWatcherSmartPoints": 0,
+    "gaps": "no",
+    "lowFodmap": false,
+    "ketogenic": false,
+    "whole30": false,
+    "preparationMinutes": 5,
+    "cookingMinutes": 8,
+    "sourceUrl": "https://ohsweetbasil.com/2-ingredient-instant-pot-applesauce-recipe/",
+    "spoonacularSourceUrl": "https://spoonacular.com/2-ingredient-instant-pot-applesauce-933310",
+    "aggregateLikes": 0,
+    "spoonacularScore": 34,
+    "healthScore": 5,
+    "creditText": "Oh Sweet Basil",
+    "sourceName": "Oh Sweet Basil",
+    "pricePerServing": 166.13,
+    "extendedIngredients": [
+        {
+            "id": 9003,
+            "aisle": "Produce",
+            "image": "apple.jpg",
+            "consitency": "solid",
+            "name": "apples",
+            "original": "11 Apples, peeled and chopped in large pieces *see note",
+            "originalString": "11 Apples, peeled and chopped in large pieces *see note",
+            "originalName": null,
+            "amount": 11,
+            "unit": "",
+            "meta": [
+                "large",
+                "peeled",
+                "chopped"
+            ],
+            "metaInformation": [
+                "large",
+                "peeled",
+                "chopped"
+            ],
+            "measures": {
+                "us": {
+                    "amount": 11,
+                    "unitShort": "",
+                    "unitLong": ""
+                },
+                "metric": {
+                    "amount": 11,
+                    "unitShort": "",
+                    "unitLong": ""
+                }
+            }
+        },
+        {
+            "id": 19335,
+            "aisle": "Baking",
+            "image": "sugar-cubes.jpg",
+            "consitency": "solid",
+            "name": "sugar",
+            "original": "Sugar if needed, up to 3 tablespoons",
+            "originalString": "Sugar if needed, up to 3 tablespoons",
+            "originalName": null,
+            "amount": 1,
+            "unit": "tablespoons",
+            "meta": [],
+            "metaInformation": [],
+            "measures": {
+                "us": {
+                    "amount": 1,
+                    "unitShort": "Tbsp",
+                    "unitLong": "Tbsp"
+                },
+                "metric": {
+                    "amount": 1,
+                    "unitShort": "Tbsp",
+                    "unitLong": "Tbsp"
+                }
+            }
+        },
+        {
+            "id": 14412,
+            "aisle": "Beverages",
+            "image": "water.jpg",
+            "consitency": "liquid",
+            "name": "water",
+            "original": "1 1/4 cup Water",
+            "originalString": "1 1/4 cup Water",
+            "originalName": null,
+            "amount": 1.25,
+            "unit": "cup",
+            "meta": [],
+            "metaInformation": [],
+            "measures": {
+                "us": {
+                    "amount": 1.25,
+                    "unitShort": "cups",
+                    "unitLong": "cups"
+                },
+                "metric": {
+                    "amount": 295.735,
+                    "unitShort": "g",
+                    "unitLong": "grams"
+                }
+            }
+        }
+    ],
+    "id": 933310,
+    "title": "2 Ingredient Instant Pot Applesauce",
+    "readyInMinutes": 13,
+    "servings": 4,
+    "image": "https://spoonacular.com/recipeImages/933310-556x370.jpg",
+    "imageType": "jpg",
+    "nutrition": {
+        "nutrients": [
+            {
+                "title": "Calories",
+                "amount": 271.87,
+                "unit": "cal",
+                "percentOfDailyNeeds": 13.59
+            },
+            {
+                "title": "Fat",
+                "amount": 0.85,
+                "unit": "g",
+                "percentOfDailyNeeds": 1.31
+            },
+            {
+                "title": "Saturated Fat",
+                "amount": 0.14,
+                "unit": "g",
+                "percentOfDailyNeeds": 0.88
+            },
+            {
+                "title": "Carbohydrates",
+                "amount": 72.12,
+                "unit": "g",
+                "percentOfDailyNeeds": 24.04
+            },
+            {
+                "title": "Sugar",
+                "amount": 55,
+                "unit": "g",
+                "percentOfDailyNeeds": 61.11
+            },
+            {
+                "title": "Cholesterol",
+                "amount": 0,
+                "unit": "mg",
+                "percentOfDailyNeeds": 0
+            },
+            {
+                "title": "Sodium",
+                "amount": 8.94,
+                "unit": "mg",
+                "percentOfDailyNeeds": 0.39
+            },
+            {
+                "title": "Protein",
+                "amount": 1.3,
+                "unit": "g",
+                "percentOfDailyNeeds": 2.6
+            },
+            {
+                "title": "Fiber",
+                "amount": 12.01,
+                "unit": "g",
+                "percentOfDailyNeeds": 48.05
+            },
+            {
+                "title": "Vitamin C",
+                "amount": 23.02,
+                "unit": "mg",
+                "percentOfDailyNeeds": 27.91
+            },
+            {
+                "title": "Potassium",
+                "amount": 535.6,
+                "unit": "mg",
+                "percentOfDailyNeeds": 15.3
+            },
+            {
+                "title": "Vitamin K",
+                "amount": 11.01,
+                "unit": "µg",
+                "percentOfDailyNeeds": 10.49
+            },
+            {
+                "title": "Vitamin B6",
+                "amount": 0.21,
+                "unit": "mg",
+                "percentOfDailyNeeds": 10.26
+            },
+            {
+                "title": "Manganese",
+                "amount": 0.18,
+                "unit": "mg",
+                "percentOfDailyNeeds": 8.76
+            },
+            {
+                "title": "Vitamin B2",
+                "amount": 0.13,
+                "unit": "mg",
+                "percentOfDailyNeeds": 7.69
+            },
+            {
+                "title": "Copper",
+                "amount": 0.15,
+                "unit": "mg",
+                "percentOfDailyNeeds": 7.39
+            },
+            {
+                "title": "Magnesium",
+                "amount": 25.81,
+                "unit": "mg",
+                "percentOfDailyNeeds": 6.45
+            },
+            {
+                "title": "Vitamin E",
+                "amount": 0.9,
+                "unit": "mg",
+                "percentOfDailyNeeds": 6.01
+            },
+            {
+                "title": "Vitamin B1",
+                "amount": 0.09,
+                "unit": "mg",
+                "percentOfDailyNeeds": 5.67
+            },
+            {
+                "title": "Phosphorus",
+                "amount": 55.06,
+                "unit": "mg",
+                "percentOfDailyNeeds": 5.51
+            },
+            {
+                "title": "Vitamin A",
+                "amount": 270.27,
+                "unit": "IU",
+                "percentOfDailyNeeds": 5.41
+            },
+            {
+                "title": "Folate",
+                "amount": 15.02,
+                "unit": "µg",
+                "percentOfDailyNeeds": 3.75
+            },
+            {
+                "title": "Iron",
+                "amount": 0.6,
+                "unit": "mg",
+                "percentOfDailyNeeds": 3.34
+            },
+            {
+                "title": "Calcium",
+                "amount": 32.4,
+                "unit": "mg",
+                "percentOfDailyNeeds": 3.24
+            },
+            {
+                "title": "Vitamin B5",
+                "amount": 0.31,
+                "unit": "mg",
+                "percentOfDailyNeeds": 3.05
+            },
+            {
+                "title": "Vitamin B3",
+                "amount": 0.46,
+                "unit": "mg",
+                "percentOfDailyNeeds": 2.28
+            },
+            {
+                "title": "Zinc",
+                "amount": 0.21,
+                "unit": "mg",
+                "percentOfDailyNeeds": 1.39
+            }
+        ],
+        "ingredients": [
+            {
+                "name": "apples",
+                "amount": 2.75,
+                "unit": "",
+                "nutrients": [
+                    {
+                        "name": "Calories",
+                        "amount": 260.26,
+                        "unit": "cal"
+                    },
+                    {
+                        "name": "Vitamin C",
+                        "amount": 23.02,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fluoride",
+                        "amount": 16.52,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fat",
+                        "amount": 0.85,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin B6",
+                        "amount": 0.21,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fiber",
+                        "amount": 12.01,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Potassium",
+                        "amount": 535.54,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Vitamin B2",
+                        "amount": 0.13,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Vitamin B3",
+                        "amount": 0.46,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Folate",
+                        "amount": 15.02,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Protein",
+                        "amount": 1.3,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Sodium",
+                        "amount": 5.01,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Copper",
+                        "amount": 0.14,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Cholesterol",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Calcium",
+                        "amount": 30.03,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Mono Unsaturated Fat",
+                        "amount": 0.04,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin D",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Vitamin B5",
+                        "amount": 0.31,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Saturated Fat",
+                        "amount": 0.14,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Sugar",
+                        "amount": 52,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Manganese",
+                        "amount": 0.18,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Zinc",
+                        "amount": 0.2,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Poly Unsaturated Fat",
+                        "amount": 0.26,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin K",
+                        "amount": 11.01,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Alcohol",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin B12",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Vitamin A",
+                        "amount": 270.27,
+                        "unit": "IU"
+                    },
+                    {
+                        "name": "Phosphorus",
+                        "amount": 55.06,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Carbohydrates",
+                        "amount": 69.12,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin E",
+                        "amount": 0.9,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Caffeine",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Iron",
+                        "amount": 0.6,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Choline",
+                        "amount": 17.02,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Magnesium",
+                        "amount": 25.03,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Selenium",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Folic Acid",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Vitamin B1",
+                        "amount": 0.09,
+                        "unit": "mg"
+                    }
+                ]
+            },
+            {
+                "name": "sugar",
+                "amount": 0.25,
+                "unit": "tablespoons",
+                "nutrients": [
+                    {
+                        "name": "Calories",
+                        "amount": 11.61,
+                        "unit": "cal"
+                    },
+                    {
+                        "name": "Vitamin C",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fluoride",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fat",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin B6",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fiber",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Potassium",
+                        "amount": 0.06,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Vitamin B2",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Vitamin B3",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Folate",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Protein",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Sodium",
+                        "amount": 0.03,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Copper",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Cholesterol",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Calcium",
+                        "amount": 0.03,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Mono Unsaturated Fat",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin D",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Vitamin B5",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Saturated Fat",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Sugar",
+                        "amount": 2.99,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Manganese",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Zinc",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Poly Unsaturated Fat",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin K",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Alcohol",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin B12",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Vitamin A",
+                        "amount": 0,
+                        "unit": "IU"
+                    },
+                    {
+                        "name": "Phosphorus",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Carbohydrates",
+                        "amount": 3,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Vitamin E",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Caffeine",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Iron",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Choline",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Magnesium",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Selenium",
+                        "amount": 0.02,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Folic Acid",
+                        "amount": 0,
+                        "unit": "µg"
+                    },
+                    {
+                        "name": "Vitamin B1",
+                        "amount": 0,
+                        "unit": "mg"
+                    }
+                ]
+            },
+            {
+                "name": "water",
+                "amount": 0.31,
+                "unit": "cup",
+                "nutrients": [
+                    {
+                        "name": "Calories",
+                        "amount": 0,
+                        "unit": "cal"
+                    },
+                    {
+                        "name": "Fluoride",
+                        "amount": 20.16,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fat",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Manganese",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Zinc",
+                        "amount": 0.01,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Fiber",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Potassium",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Protein",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Phosphorus",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Sodium",
+                        "amount": 3.91,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Carbohydrates",
+                        "amount": 0,
+                        "unit": "g"
+                    },
+                    {
+                        "name": "Copper",
+                        "amount": 0.01,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Calcium",
+                        "amount": 2.34,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Iron",
+                        "amount": 0,
+                        "unit": "mg"
+                    },
+                    {
+                        "name": "Magnesium",
+                        "amount": 0.78,
+                        "unit": "mg"
+                    }
+                ]
+            }
+        ],
+        "caloricBreakdown": {
+            "percentProtein": 1.73,
+            "percentFat": 2.54,
+            "percentCarbs": 95.73
+        }
+    },
+    "cuisines": [],
+    "dishTypes": [
+        "side dish"
+    ],
+    "diets": [
+        "gluten free",
+        "dairy free",
+        "lacto ovo vegetarian",
+        "vegan"
+    ],
+    "occasions": [],
+    "winePairing": {},
+    "instructions": "Places the apples and water in an instant pot. Secure the lid and be sure that the valve is set to sealing. Set the timer to 8 minutes on high pressure and let the apples cook.Once done, vent the apples until the steam stops.Remove the apples to a blender or a bowl with an immersion blender and pulse until desired consistency. Taste and add a little sugar if needed, we usually dont add any, but occasionally need a tablespoon or two.",
+    "analyzedInstructions": [
+        {
+            "name": "",
+            "steps": [
+                {
+                    "number": 1,
+                    "step": "Places the apples and water in an instant pot. Secure the lid and be sure that the valve is set to sealing. Set the timer to 8 minutes on high pressure and let the apples cook.Once done, vent the apples until the steam stops.",
+                    "ingredients": [
+                        {
+                            "id": 9003,
+                            "name": "apple",
+                            "image": "apple.jpg"
+                        },
+                        {
+                            "id": 14412,
+                            "name": "water",
+                            "image": "water.jpg"
+                        }
+                    ],
+                    "equipment": [
+                        {
+                            "id": 414093,
+                            "name": "instant pot",
+                            "image": ""
+                        },
+                        {
+                            "id": 404695,
+                            "name": "kitchen timer",
+                            "image": "kitchen-timer.jpg"
+                        }
+                    ],
+                    "length": {
+                        "number": 8,
+                        "unit": "minutes"
+                    }
+                },
+                {
+                    "number": 2,
+                    "step": "Remove the apples to a blender or a bowl with an immersion blender and pulse until desired consistency. Taste and add a little sugar if needed, we usually dont add any, but occasionally need a tablespoon or two.",
+                    "ingredients": [
+                        {
+                            "id": 9003,
+                            "name": "apple",
+                            "image": "apple.jpg"
+                        },
+                        {
+                            "id": 19335,
+                            "name": "sugar",
+                            "image": "sugar-in-bowl.png"
+                        }
+                    ],
+                    "equipment": [
+                        {
+                            "id": 404776,
+                            "name": "immersion blender",
+                            "image": "immersion-blender.png"
+                        },
+                        {
+                            "id": 404726,
+                            "name": "blender",
+                            "image": "blender.png"
+                        },
+                        {
+                            "id": 404783,
+                            "name": "bowl",
+                            "image": "bowl.jpg"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "creditsText": "Oh Sweet Basil"
+}
