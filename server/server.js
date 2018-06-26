@@ -23,8 +23,8 @@ app.get('/api/ingredients', (req, res) => {
 });
 
 app.post('/api/ingredients', (req, res) => {
-  const {email, ingredients} = req.body;
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients}))
+  const {email, ingredients, shouldReplace} = req.body;
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace}))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results)
       res.send(results);
