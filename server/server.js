@@ -70,7 +70,7 @@ app.post('/api/parse', (req, res) => {
   res.send(parsed);
 });
 
-app.post('/api/recipes', (req, res) => {
+app.post('/api/recipelist', (req, res) => {
   //temporarily here to test server and client
   const testRecipes = require('./testRecipes.json');
   res.send(testRecipes);
