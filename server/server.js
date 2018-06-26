@@ -22,19 +22,50 @@ app.get('/api/ingredients', (req, res) => {
   res.send(testIngredients);
 });
 
+app.post('/api/ingredients', (req, res) => {
+  const { email, ingredients, oldIngredients, shouldReplace } = req.body;
+  let parsed = parseIngredients(ingredients);
+  if (oldIngredients && oldIngredients.length && !shouldReplace) {
+    parsed = combineIngredients(parsed, oldIngredients);
+  }
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed, shouldReplace: shouldReplace}))
+    .then((results) => {
+      console.log('SUCCESS inserting ingredients', results)
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR inserting ingredients', err)
+      res.send(err);
+  });
+});
+
 const units = {
   teaspoon: 'tsp',
   tablespoon: 'Tbs',
-  ounce: 'fl-oz',
+  'fluid ounce': 'fl-oz',
   cup: 'cup',
   pint: 'pnt',
   quart: 'qt',
   gallon: 'gal',
+  ounce: 'oz',
+  pound: 'lb',
+  liter: 'l',
 }
 
-app.post('/api/combine', (req, res) => {
-  // Takes two arrays of objects with quantity, unit, and ingredient properties
-  const { ingredients, newIngredients } = req.body;
+// Takes in array of strings
+const parseIngredients = (ingredients) => {
+  let parsed = ingredients.map(ingredient => {
+    let obj = parse(ingredient.toLowerCase());
+    obj.ingredient = pluralize.singular(obj.ingredient);
+    if (obj.unit) {
+      obj.unit = pluralize.singular(obj.unit);
+    }
+    return obj;
+  });
+  return parsed;
+}
+
+// Takes in two arrays of objects with quantity, unit, and ingredient properties
+const combineIngredients = (ingredients, oldIngredients) => {
   // Converts the old ingredients array into an object
   let ingredientsObj = {};
   ingredients.forEach(ingredient => {
@@ -42,7 +73,7 @@ app.post('/api/combine', (req, res) => {
   });
   // Compares elements from the new ingredients array to old ingredients and converts as necessary
   let results = [];
-  newIngredients.forEach(newIngredient => {
+  ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
     if (old && units[old.unit] && units[newIngredient.unit]) {
       newIngredient.quantity = convert(newIngredient.quantity).from(units[newIngredient.unit]).to(units[old.unit]);
@@ -56,21 +87,9 @@ app.post('/api/combine', (req, res) => {
       results.push(newIngredient);
     }
   });
-  res.send(results);
-});
+  return results;
+};
 
-app.post('/api/parse', (req, res) => {
-  const { ingredients } = req.body;
-  let parsed = ingredients.map(ingredient => {
-    let obj = parse(ingredient.toLowerCase());
-    obj.ingredient = pluralize.singular(obj.ingredient);
-    if (obj.unit) {
-      obj.unit = pluralize.singular(obj.unit);
-    }
-    return obj;
-  });
-  res.send(parsed);
-});
 
 app.post('/api/recipelist', (req, res) => {
   //temporarily here to test server and client
@@ -79,14 +98,18 @@ app.post('/api/recipelist', (req, res) => {
 })
 
 app.post('/api/signup', (req, res) => {
-  console.log(req.body);
   const { email, password, name } = req.body;
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) {
+      console.log('Error in hashing user password', err);
       res.status(404).end();
     }
-    dbHelpers.insertUser(email, hash, name);
-    res.end('User saved!');
+    dbHelpers.insertUser({email: email, password: hash, name: name}).then(() =>{
+      res.end('User saved!');
+    }).catch((err) => {
+      console.log('Error in saving new user to the database', err);
+      res.status(404).end();
+    })
   });
 });
 app.post('/api/recipe', (req, res) => {
