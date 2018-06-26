@@ -16,28 +16,32 @@ const getRecipesByIngredients = (ingredients) => {
     q = ingredients;
   }
 
-  axios.get(url + q,
-    {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
-    'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
-    .then((results) => {
-      console.log('SUCCESS finding recipes:', results.data);
-    }).catch((err) => {
-      console.error('ERROR: finding recipes', err);
-    });
+  return new Promise((resolve, reject) => {
+    axios.get(url + q,
+      {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
+      'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
+      .then((results) => {
+        resolve(results.data);
+      }).catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 const getRecipeById = (id) => {
   const firstHalf = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/';
   const lastHalf = '/information?includeNutrition=true'
   
-  axios.get(firstHalf + id + lastHalf,
-    {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
-    'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
-    .then((results) => {
-      console.log('SUCCESS getting recipe:', results.data);
-    }).catch((err) => {
-      console.error('ERROR getting recipe:', err);
-    });
+  return new Promise((resolve, reject) => {
+    axios.get(firstHalf + id + lastHalf,
+      {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
+      'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
+      .then((results) => {
+        resolve(results.data);
+      }).catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 module.exports = {

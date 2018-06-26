@@ -16,10 +16,34 @@ const bcrypt = require('bcrypt');
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
-app.get('/api/ingredients', (req, res) => {
-  // This is just here temporarily to test the server
-  const testIngredients = require('../database/testIngredients.json');
-  res.send(testIngredients);
+app.get('/api/ingredients/:email', (req, res) => {
+  const {email} = req.params;
+  dbHelpers.selectIngredients({email:email}).then((results) => {
+    console.log('SUCCESS getting ingredients from DB');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR getting ingredients from DB', err);
+    res.status(404).end();
+  })
+
+  //Uncomment if wanting to use test data
+  // const testIngredients = require('../database/testIngredients.json');
+  // res.send(testIngredients);
+});
+
+app.get('/api/recipe/:recipeId', (req, res) => {
+  const {recipeId} = req.params;
+  extCalls.getRecipeById(recipeId).then((results) => {
+    console.log('SUCCESS getting recipe from Spoonacular');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR getting recipe from Spoonacular', err);
+    res.status(404).end();
+  });
+
+  // Uncomment if wanting to use test data
+  // const testRecipe = require('./testRecipe.json');
+  // res.send(testRecipe);
 });
 
 app.post('/api/ingredients', (req, res) => {
@@ -30,11 +54,11 @@ app.post('/api/ingredients', (req, res) => {
   }
   Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed, shouldReplace: shouldReplace}))
     .then((results) => {
-      console.log('SUCCESS inserting ingredients', results)
+      console.log('SUCCESS inserting ingredients', results);
       res.send(results);
     }).catch((err) => {
-      console.error('ERROR inserting ingredients', err)
-      res.send(err);
+      console.error('ERROR inserting ingredients', err);
+      res.status(404).end();
   });
 });
 
@@ -132,12 +156,6 @@ app.post('/api/signup', (req, res) => {
       res.status(404).end();
     })
   });
-});
-
-app.post('/api/recipe', (req, res) => {
-  //temporarily here to test server and client
-  const testRecipe = require('./testRecipe.json');
-  res.send(testRecipe);
 });
 
 app.listen(process.env.PORT || 3000, () => {
