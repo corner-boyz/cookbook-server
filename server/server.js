@@ -11,6 +11,8 @@ const { parse, combine } = require('recipe-ingredient-parser');
 const convert = require('convert-units');
 const pluralize = require('pluralize');
 
+const bcrypt = require('bcrypt');
+
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
@@ -76,6 +78,17 @@ app.post('/api/recipes', (req, res) => {
   res.send(testRecipes);
 })
 
+app.post('/api/signup', (req, res) => {
+  console.log(req.body);
+  const { email, password, name } = req.body;
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      res.status(404).end();
+    }
+    dbHelpers.insertUser(email, hash, name);
+    res.end('User saved!');
+  });
+});
 app.post('/api/recipe', (req, res) => {
   //temporarily here to test server and client
   const testRecipe = require('./testRecipe.json');
