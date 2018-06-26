@@ -25,11 +25,14 @@ app.get('/api/ingredients', (req, res) => {
 const units = {
   teaspoon: 'tsp',
   tablespoon: 'Tbs',
-  ounce: 'fl-oz',
+  'fluid ounce': 'fl-oz',
   cup: 'cup',
   pint: 'pnt',
   quart: 'qt',
   gallon: 'gal',
+  ounce: 'oz',
+  pound: 'lb',
+  liter: 'l',
 }
 
 app.post('/api/combine', (req, res) => {
