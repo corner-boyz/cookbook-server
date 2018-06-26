@@ -76,6 +76,12 @@ app.post('/api/recipes', (req, res) => {
   res.send(testRecipes);
 })
 
+app.post('/api/recipe', (req, res) => {
+  //temporarily here to test server and client
+  const testRecipe = require('./testRecipe.json');
+  res.send(testRecipe);
+})
+
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
 });
