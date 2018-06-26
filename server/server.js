@@ -22,6 +22,18 @@ app.get('/api/ingredients', (req, res) => {
   res.send(testIngredients);
 });
 
+app.post('/api/ingredients', (req, res) => {
+  const {email, ingredients} = req.body;
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients}))
+    .then((results) => {
+      console.log('SUCCESS inserting ingredients', results)
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR inserting ingredients', err)
+      res.send(err);
+  });
+});
+
 const units = {
   teaspoon: 'tsp',
   tablespoon: 'Tbs',

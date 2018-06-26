@@ -24,39 +24,52 @@ const createTables = () => {
     unit TEXT,
     PRIMARY KEY(ingredient, email)
   );`
-  db.raw(query).then((results) => {
-    console.log('SUCCESS connecting to DB');
-  }).catch((err) => {
-    console.error('ERROR connecting to DB:', err);
+  return new Promise ((resolve, reject) => {
+    db.raw(query).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    })
   })
 };
-createTables();
+
+createTables().then((results) => {
+  console.log('SUCCESS connecting to DB');
+}).catch((err) => {
+  console.error('ERROR connecting to DB:', err);
+});
 
 // Takes in object with email
 const selectUser = ({email}) => {
-  db.select('email', 'name').from('users').where('email', email).then((results) => {
-    console.log('SUCCESS selecting user:', results);
-  }).catch((err) => {
-    console.error('ERROR selecting user:', err);
-  })
+  return new Promise((resolve, reject) => {
+    db.select('email', 'name').from('users').where('email', email).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    })
+  });
 };
 
 // Takes in object with email
 const selectIngredients = ({email}) => {
-  db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).then((results) => {
-    console.log('SUCCESS selecting ingredients:', results);
-  }).catch((err) => {
-    console.error('ERROR selecting ingredients:', err);
-  })
+  return new Promise((resolve, reject) => {
+    db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    })
+  });
 };
 
 // Takes in object with email, password, and name
 const insertUser = ({email, password, name}) => {
-  db('users').insert({email: email, password: password, name: name}).then((results) => {
-    console.log('SUCCESS inserting user:', results);
-  }).catch((err) => {
-    console.error('ERROR inserting user:', err);
-  })
+  return new Promise((resolve, reject) => {
+    db('users').insert({email: email, password: password, name: name}).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    })
+  });
 };
 
 // Takes in object with email and either ingredients array or ingredients object
@@ -71,19 +84,24 @@ const insertIngredients = ({email, ingredients}) => {
     params.push({email: email, ingredient: ingredients.ingredient, quantity: ingredients.quantity, unit: ingredients.unit});
   }
 
-  params.forEach((param) => {
-    const query = `INSERT INTO 
+  const query = `INSERT INTO 
     ingredients (email, ingredient, quantity, unit) 
     VALUES(:email, :ingredient, :quantity, :unit) 
     ON CONFLICT(email, ingredient) 
     DO UPDATE
     SET quantity = :quantity, unit = :unit`;
-    db.raw(query, param).then((results) => {
-      console.log('SUCCESS inserting/updating ingredient:', results);
-    }).catch((err) => {
-      console.error('ERROR inserting/updating ingredient:', err);
-    })
-  })
+
+  let promises = [];
+  params.forEach((param) => {    
+    promises.push(new Promise((resolve, reject) => {
+      db.raw(query, param).then((results) => {
+        resolve(results);
+      }).catch((err) => {
+        reject(err);
+      });
+    }));
+  });
+  return promises;
 };
 
 module.exports = {
