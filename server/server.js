@@ -23,12 +23,12 @@ app.get('/api/ingredients', (req, res) => {
 });
 
 app.post('/api/ingredients', (req, res) => {
-  const { email, ingredients, oldIngredients } = req.body;
+  const { email, ingredients, oldIngredients, shouldReplace } = req.body;
   let parsed = parseIngredients(ingredients);
-  if (oldIngredients && oldIngredients.length) {
+  if (oldIngredients && oldIngredients.length && !shouldReplace) {
     parsed = combineIngredients(parsed, oldIngredients);
   }
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed}))
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed, shouldReplace: shouldReplace}))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results)
       res.send(results);
