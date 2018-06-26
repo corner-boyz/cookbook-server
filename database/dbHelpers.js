@@ -74,7 +74,8 @@ const insertUser = ({email, password, name}) => {
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({email, ingredients}) => {
+const insertIngredients = ({email, ingredients, shouldReplace}) => {
+  console.log('increment', shouldReplace);
   let params = []
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ingredient, quantity, unit}) => {
@@ -84,13 +85,23 @@ const insertIngredients = ({email, ingredients}) => {
     params.push({email: email, ingredient: ingredients.ingredient, quantity: ingredients.quantity, unit: ingredients.unit});
   }
 
-  const query = `INSERT INTO 
-    ingredients (email, ingredient, quantity, unit) 
-    VALUES(:email, :ingredient, :quantity, :unit) 
-    ON CONFLICT(email, ingredient) 
-    DO UPDATE
-    SET quantity = :quantity, unit = :unit`;
-
+  let query = '';
+  if (shouldReplace) {
+    query = `INSERT INTO 
+      ingredients (email, ingredient, quantity, unit) 
+      VALUES(:email, :ingredient, :quantity, :unit) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit`;
+  } else {
+    query = `INSERT INTO 
+      ingredients (email, ingredient, quantity, unit) 
+      VALUES(:email, :ingredient, :quantity, :unit) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = ingredients.quantity + :quantity, unit = :unit`;
+  }
+  
   let promises = [];
   params.forEach((param) => {    
     promises.push(new Promise((resolve, reject) => {
