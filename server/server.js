@@ -95,7 +95,28 @@ app.post('/api/recipelist', (req, res) => {
   //temporarily here to test server and client
   const testRecipes = require('./testRecipes.json');
   res.send(testRecipes);
-})
+});
+
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  dbHelpers.selectUser({email: email}).then(results => {
+    if (!results.length) {
+      res.end('Wrong email or password');
+    } else {
+      let user = results[0];
+      bcrypt.compare(password, user.password).then(doesMatch => {
+        if (doesMatch) {
+          res.send({ email: user.email, name: user.name});
+        } else {
+          res.end('Wrong email or password');
+        }
+      });
+    }
+  }).catch((err) => {
+    console.log('Error in retrieving user information from the database', err);
+    res.status(404).end();
+  });
+});
 
 app.post('/api/signup', (req, res) => {
   const { email, password, name } = req.body;
@@ -112,11 +133,12 @@ app.post('/api/signup', (req, res) => {
     })
   });
 });
+
 app.post('/api/recipe', (req, res) => {
   //temporarily here to test server and client
   const testRecipe = require('./testRecipe.json');
   res.send(testRecipe);
-})
+});
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);

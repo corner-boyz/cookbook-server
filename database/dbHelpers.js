@@ -42,7 +42,7 @@ createTables().then((results) => {
 // Takes in object with email
 const selectUser = ({email}) => {
   return new Promise((resolve, reject) => {
-    db.select('email', 'name').from('users').where('email', email).then((results) => {
+    db.select('email', 'name', 'password').from('users').where('email', email).then((results) => {
       resolve(results);
     }).catch((err) => {
       reject(err);
