@@ -52,9 +52,6 @@ const selectIngredients = ({email}) => {
 
 // Takes in object with email, password, and name
 const insertUser = ({email, password, name}) => {
-  if (password.length < 6) {
-    return console.error('Password must be at least 6 characters');
-  }
   db('users').insert({email: email, password: password, name: name}).then((results) => {
     console.log('SUCCESS inserting user:', results);
   }).catch((err) => {
