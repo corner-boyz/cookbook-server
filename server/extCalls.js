@@ -2,12 +2,12 @@ const axios = require('axios');
 
 const getRecipesByIngredients = (ingredients) => {
   // Turn passed in ingredients into query string
-  const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=2&limitLicense=false&ranking=10&fillIngredients=true&ingredients=';
+  const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=10&limitLicense=false&ranking=10&fillIngredients=true&ingredients=';
   let q = '';
   if (Array.isArray(ingredients)) {
     ingredients.forEach((ingredient, i) => {
       if (i !== ingredients.length - 1) {
-        q += `${ingredient},`;
+        q += `${ingredient.ingredient},`;
       } else {
         q += ingredient;
       }
@@ -15,7 +15,6 @@ const getRecipesByIngredients = (ingredients) => {
   } else {
     q = ingredients;
   }
-
   return new Promise((resolve, reject) => {
     axios.get(url + q,
       {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
