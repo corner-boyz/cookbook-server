@@ -47,12 +47,13 @@ app.get('/api/recipe/:recipeId', (req, res) => {
 });
 
 app.post('/api/ingredients', (req, res) => {
+  console.log('req.body: ', req.body);
   const { email, ingredients, oldIngredients, shouldReplace } = req.body;
-  let parsed = parseIngredients(ingredients);
-  if (oldIngredients && oldIngredients.length && !shouldReplace) {
-    parsed = combineIngredients(parsed, oldIngredients);
-  }
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed, shouldReplace: shouldReplace}))
+  // let parsed = parseIngredients(ingredients);
+  // if (oldIngredients && oldIngredients.length && !shouldReplace) {
+  //   parsed = combineIngredients(parsed, oldIngredients);
+  // }
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace}))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results);
       res.send(results);
@@ -116,13 +117,9 @@ const combineIngredients = (ingredients, oldIngredients) => {
 
 
 app.post('/api/recipelist', (req, res) => {
-  //temporarily here to test server and client
-  // console.log('req', req.body)
   extCalls.getRecipesByIngredients(req.body).then((results) => {
     res.send(results);
   })
-  // const testRecipes = require('./testRecipes.json');
-  // res.send(testRecipes);
 });
 
 app.post('/api/login', (req, res) => {
