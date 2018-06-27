@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 
 app.get('/api/ingredients/:email', (req, res) => {
   const {email} = req.params;
-  dbHelpers.selectIngredients({email:email}).then((results) => {
+  dbHelpers.selectIngredients({email: email}).then((results) => {
     console.log('SUCCESS getting ingredients from DB');
     res.send(results);
   }).catch((err) => {
@@ -117,8 +117,12 @@ const combineIngredients = (ingredients, oldIngredients) => {
 
 app.post('/api/recipelist', (req, res) => {
   //temporarily here to test server and client
-  const testRecipes = require('./testRecipes.json');
-  res.send(testRecipes);
+  // console.log('req', req.body)
+  extCalls.getRecipesByIngredients(req.body).then((results) => {
+    res.send(results);
+  })
+  // const testRecipes = require('./testRecipes.json');
+  // res.send(testRecipes);
 });
 
 app.post('/api/login', (req, res) => {
