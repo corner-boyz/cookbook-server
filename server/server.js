@@ -47,7 +47,6 @@ app.get('/api/recipe/:recipeId', (req, res) => {
 });
   //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
-  console.log('req.body: ', req.body);
   const { email, ingredients, oldIngredients, shouldReplace } = req.body;
   // let parsed = parseIngredients(ingredients);
   // if (oldIngredients && oldIngredients.length && !shouldReplace) {
@@ -62,6 +61,19 @@ app.post('/api/ingredients', (req, res) => {
       res.status(404).end();
   });
 });
+
+app.post('/api/recipe', (req, res) => {
+  const { email, id, title, image } = req.body;
+  Promise.all(dbHelpers.saveRecipe({email: email, id: id, title: title, image: image}))
+  .then((results) => {
+    console.log('SUCCESS saving recipe');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR saving recipe', err);
+    res.status(404).end();
+  });
+});
+
 
 app.post('/api/recipelist', (req, res) => {
   extCalls.getRecipesByIngredients(req.body).then((results) => {

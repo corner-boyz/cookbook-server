@@ -66,7 +66,7 @@ const selectUser = ({email}) => {
       resolve(results);
     }).catch((err) => {
       reject(err);
-    })
+    });
   });
 };
 
@@ -77,7 +77,7 @@ const selectIngredients = ({email}) => {
       resolve(results);
     }).catch((err) => {
       reject(err);
-    })
+    });
   });
 };
   //====================================================
@@ -88,7 +88,7 @@ const insertUser = ({email, password, name}) => {
       resolve(results);
     }).catch((err) => {
       reject(err);
-    })
+    });
   });
 };
 
@@ -135,19 +135,51 @@ const insertIngredients = ({email, ingredients, shouldReplace}) => {
   return promises;
 };
 
-const insertRecipe = ({recipeId, title, imageUrl}) => {
+const insertRecipe = (recipe) => {
+  const query = `INSERT INTO
+  recipes (recipeId, title, imageUrl)
+  SELECT :id, :title, :image
+    WHERE NOT EXISTS (
+      SELECT recipeId FROM recipes WHERE recipeId = :id
+  );`
   return new Promise((resolve, reject) => {
-    db('recipes').insert({recipeId: recipeId, title: title, imageUrl: imageUrl}).then((results) => {
+    db.raw(query, recipe).then((results) => {
       resolve(results);
     }).catch((err) => {
       reject(err);
-    })
+    });
   });
 };
+
+const insertUsersRecipe = (recipe) => {
+  const query = `INSERT INTO 
+      usersRecipes (email, recipeId) 
+      SELECT :email, :id
+        WHERE NOT EXISTS (
+          SELECT * FROM usersRecipes WHERE email = :email AND recipeId = :id
+        );`;
+
+  return new Promise((resolve, reject) => {
+    db.raw(query, recipe).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    });
+  });
+};
+
+const saveRecipe = (recipe) => {
+  let promises = [];
+  promises.push(insertRecipe(recipe));
+  promises.push(insertUsersRecipe(recipe));
+  
+  return promises;
+}
   //====================================================
 module.exports = {
   selectUser,
   selectIngredients,
   insertUser,
-  insertIngredients
+  insertIngredients,
+  saveRecipe
 };
