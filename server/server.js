@@ -63,7 +63,8 @@ app.post('/api/ingredients', (req, res) => {
 });
 
 app.post('/api/recipe', (req, res) => {
-  const { email, id, title, image } = req.body;
+  const { email, recipe } = req.body;
+  const { id, title, image } = recipe;
   Promise.all(dbHelpers.saveRecipe({email: email, id: id, title: title, image: image}))
   .then((results) => {
     console.log('SUCCESS saving recipe');

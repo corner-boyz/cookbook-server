@@ -73,7 +73,7 @@ const selectUser = ({email}) => {
 // Takes in object with email
 const selectIngredients = ({email}) => {
   return new Promise((resolve, reject) => {
-    db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).then((results) => {
+    db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).orderBy('ingredient').then((results) => {
       resolve(results);
     }).catch((err) => {
       reject(err);
