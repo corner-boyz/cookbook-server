@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 
 app.get('/api/ingredients/:email', (req, res) => {
   const {email} = req.params;
-  dbHelpers.selectIngredients({email:email}).then((results) => {
+  dbHelpers.selectIngredients({email: email}).then((results) => {
     console.log('SUCCESS getting ingredients from DB');
     res.send(results);
   }).catch((err) => {
@@ -47,12 +47,13 @@ app.get('/api/recipe/:recipeId', (req, res) => {
 });
 
 app.post('/api/ingredients', (req, res) => {
+  console.log('req.body: ', req.body);
   const { email, ingredients, oldIngredients, shouldReplace } = req.body;
-  let parsed = parseIngredients(ingredients);
-  if (oldIngredients && oldIngredients.length && !shouldReplace) {
-    parsed = combineIngredients(parsed, oldIngredients);
-  }
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed, shouldReplace: shouldReplace}))
+  // let parsed = parseIngredients(ingredients);
+  // if (oldIngredients && oldIngredients.length && !shouldReplace) {
+  //   parsed = combineIngredients(parsed, oldIngredients);
+  // }
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace}))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results);
       res.send(results);
@@ -92,8 +93,8 @@ const parseIngredients = (ingredients) => {
 const combineIngredients = (ingredients, oldIngredients) => {
   // Converts the old ingredients array into an object
   let ingredientsObj = {};
-  oldIngredients.forEach(ingredient => {
-    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit}
+  ingredients.forEach(ingredient => {
+    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit }
   });
   // Compares elements from the new ingredients array to old ingredients and converts as necessary
   let results = [];
@@ -116,10 +117,31 @@ const combineIngredients = (ingredients, oldIngredients) => {
 
 
 app.post('/api/recipelist', (req, res) => {
-  //temporarily here to test server and client
-  const testRecipes = require('./testRecipes.json');
-  res.send(testRecipes);
-})
+  extCalls.getRecipesByIngredients(req.body).then((results) => {
+    res.send(results);
+  })
+});
+
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  dbHelpers.selectUser({email: email}).then(results => {
+    if (!results.length) {
+      res.end('Wrong email or password');
+    } else {
+      let user = results[0];
+      bcrypt.compare(password, user.password).then(doesMatch => {
+        if (doesMatch) {
+          res.send({ email: user.email, name: user.name});
+        } else {
+          res.end('Wrong email or password');
+        }
+      });
+    }
+  }).catch((err) => {
+    console.log('Error in retrieving user information from the database', err);
+    res.status(404).end();
+  });
+});
 
 app.post('/api/signup', (req, res) => {
   const { email, password, name } = req.body;
