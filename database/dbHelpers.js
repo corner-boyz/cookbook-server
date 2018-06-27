@@ -1,19 +1,25 @@
 const db = require('./database').knex;
-
+  //====================================================
 //Creates tables if they don't exist yet
 const createTables = () => {
   const query = `CREATE TABLE IF NOT EXISTS users(
     email TEXT NOT NULL PRIMARY KEY,
     password TEXT,
-    name TEXT
+    name TEXT,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW()
   );
   CREATE TABLE IF NOT EXISTS pantries(
     pantryId SERIAL PRIMARY KEY,
-    name TEXT
+    name TEXT,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW()
   );
   CREATE TABLE IF NOT EXISTS usersPantries(
     email TEXT NOT NULL REFERENCES users(email),
     pantryId INT NOT NULL REFERENCES pantries(pantryId),
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(email, pantryId)
   );
   CREATE TABLE IF NOT EXISTS ingredients(
@@ -22,8 +28,22 @@ const createTables = () => {
     pantryId INT REFERENCES pantries(pantryId),
     quantity INT,
     unit TEXT,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(ingredient, email)
-  );`
+  );
+  CREATE TABLE IF NOT EXISTS recipes(
+    recipeId TEXT NOT NULL PRIMARY KEY,
+    title TEXT,
+    imageUrl TEXT,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW());
+  CREATE TABLE IF NOT EXISTS usersRecipes(
+    email TEXT NOT NULL REFERENCES users(email),
+    recipeId TEXT NOT NULL REFERENCES recipes(recipeId),
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY(email, recipeId));`
   return new Promise ((resolve, reject) => {
     db.raw(query).then((results) => {
       resolve(results);
@@ -38,7 +58,7 @@ createTables().then((results) => {
 }).catch((err) => {
   console.error('ERROR connecting to DB:', err);
 });
-
+  //====================================================
 // Takes in object with email
 const selectUser = ({email}) => {
   return new Promise((resolve, reject) => {
@@ -60,7 +80,7 @@ const selectIngredients = ({email}) => {
     })
   });
 };
-
+  //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({email, password, name}) => {
   return new Promise((resolve, reject) => {
@@ -115,6 +135,16 @@ const insertIngredients = ({email, ingredients, shouldReplace}) => {
   return promises;
 };
 
+const insertRecipe = ({recipeId, title, imageUrl}) => {
+  return new Promise((resolve, reject) => {
+    db('recipes').insert({recipeId: recipeId, title: title, imageUrl: imageUrl}).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    })
+  });
+};
+  //====================================================
 module.exports = {
   selectUser,
   selectIngredients,
