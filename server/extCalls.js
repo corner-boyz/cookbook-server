@@ -20,6 +20,8 @@ const getRecipesByIngredients = (ingredients) => {
       {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
       'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
       .then((results) => {
+        console.log('REQUESTS REMAINING:', results.headers['x-ratelimit-requests-remaining']);
+        console.log('RESULTS REMAINING:', results.headers['x-ratelimit-results-remaining']);
         resolve(results.data);
       }).catch((err) => {
         reject(err);
@@ -36,6 +38,8 @@ const getRecipeById = (id) => {
       {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
       'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
       .then((results) => {
+        console.log('REQUESTS REMAINING:', results.headers['x-ratelimit-requests-remaining']);
+        console.log('RESULTS REMAINING:', results.headers['x-ratelimit-results-remaining']);
         resolve(results.data);
       }).catch((err) => {
         reject(err);
