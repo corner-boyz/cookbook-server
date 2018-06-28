@@ -45,6 +45,17 @@ app.get('/api/recipe/:recipeId', (req, res) => {
   // const testRecipe = require('./testRecipe.json');
   // res.send(testRecipe);
 });
+
+app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
+  const {recipeId, email} = req.params;
+  console.log('ID', recipeId, 'EMAIL', email)
+  dbHelpers.selectRecipe({email: email, recipeId: recipeId}).then((results) => {
+    console.log('SUCCESS selecting recipe', results);
+    res.send(results);
+  }).catch((err) => {
+    console.log('ERROR selecting recipe', err);
+  });
+});
   //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, oldIngredients, shouldReplace } = req.body;
@@ -62,10 +73,10 @@ app.post('/api/ingredients', (req, res) => {
   });
 });
 
-app.post('/api/recipe', (req, res) => {
+app.post('/api/saverecipe', (req, res) => {
   const { email, recipe } = req.body;
   const { id, title, image } = recipe;
-  Promise.all(dbHelpers.saveRecipe({email: email, id: id, title: title, image: image}))
+  dbHelpers.saveRecipe({email: email, id: id, title: title, image: image})
   .then((results) => {
     console.log('SUCCESS saving recipe');
     res.send(results);

@@ -80,6 +80,18 @@ const selectIngredients = ({email}) => {
     });
   });
 };
+
+// Takes in object with email and recipeId
+const selectRecipe = ({email, recipeId}) => {
+  console.log(email)
+  return new Promise((resolve, reject) => {
+    db.select('recipeid').from('usersrecipes').where('recipeid', recipeId).then((results) => {
+      resolve(results);
+    }).catch((err) => {
+      reject(err);
+    });
+  });
+};
   //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({email, password, name}) => {
@@ -169,11 +181,21 @@ const insertUsersRecipe = (recipe) => {
 };
 
 const saveRecipe = (recipe) => {
-  let promises = [];
-  promises.push(insertRecipe(recipe));
-  promises.push(insertUsersRecipe(recipe));
-  
-  return promises;
+  return new Promise((resolve, reject) => {  
+    insertRecipe(recipe).then((results) => {
+      console.log('SUCCESS inserting into recipes', recipe);
+      insertUsersRecipe(recipe).then((results) => {
+          console.log('SUCCESS inserting into usersRecipes');
+          resolve(results);
+        }).catch((err) => {
+          console.error('ERROR inserting into usersRecipes');
+          reject(err);
+        })
+      }).catch((err) => {
+        console.error('ERROR inserting into recipes', err);
+        reject(err);
+      });
+  });
 }
   //====================================================
 module.exports = {
@@ -181,5 +203,6 @@ module.exports = {
   selectIngredients,
   insertUser,
   insertIngredients,
-  saveRecipe
+  saveRecipe,
+  selectRecipe
 };
