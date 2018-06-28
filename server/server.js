@@ -16,6 +16,23 @@ const bcrypt = require('bcrypt');
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
+// This is necessary to receive requests from the Chrome extension
+const allowCrossDomain = (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+};
+app.use(allowCrossDomain);
+
+app.get('/api/checkLogin', (req, res) => {
+  if (req.session.isLoggedIn) {
+    res.send({ isLoggedIn: true, email: req.session.email, name: req.session.name });
+  } else {
+    res.send({ isLoggedIn: false });
+  }
+});
+
 app.get('/api/ingredients/:email', (req, res) => {
   const {email} = req.params;
   dbHelpers.selectIngredients({email:email}).then((results) => {
