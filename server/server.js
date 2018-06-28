@@ -12,7 +12,7 @@ const convert = require('convert-units');
 const pluralize = require('pluralize');
 
 const bcrypt = require('bcrypt');
-
+  //====================================================
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
@@ -25,17 +25,9 @@ const allowCrossDomain = (req, res, next) => {
 };
 app.use(allowCrossDomain);
 
-app.get('/api/checkLogin', (req, res) => {
-  if (req.session.isLoggedIn) {
-    res.send({ isLoggedIn: true, email: req.session.email, name: req.session.name });
-  } else {
-    res.send({ isLoggedIn: false });
-  }
-});
-
 app.get('/api/ingredients/:email', (req, res) => {
   const {email} = req.params;
-  dbHelpers.selectIngredients({email:email}).then((results) => {
+  dbHelpers.selectIngredients({email: email}).then((results) => {
     console.log('SUCCESS getting ingredients from DB');
     res.send(results);
   }).catch((err) => {
@@ -63,13 +55,24 @@ app.get('/api/recipe/:recipeId', (req, res) => {
   // res.send(testRecipe);
 });
 
+app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
+  const {recipeId, email} = req.params;
+  console.log('ID', recipeId, 'EMAIL', email)
+  dbHelpers.selectRecipe({email: email, recipeId: recipeId}).then((results) => {
+    console.log('SUCCESS selecting recipe', results);
+    res.send(results);
+  }).catch((err) => {
+    console.log('ERROR selecting recipe', err);
+  });
+});
+  //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, oldIngredients, shouldReplace } = req.body;
-  let parsed = parseIngredients(ingredients);
-  if (oldIngredients && oldIngredients.length && !shouldReplace) {
-    parsed = combineIngredients(parsed, oldIngredients);
-  }
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: parsed, shouldReplace: shouldReplace}))
+  // let parsed = parseIngredients(ingredients);
+  // if (oldIngredients && oldIngredients.length && !shouldReplace) {
+  //   parsed = combineIngredients(parsed, oldIngredients);
+  // }
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace}))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results);
       res.send(results);
@@ -79,63 +82,24 @@ app.post('/api/ingredients', (req, res) => {
   });
 });
 
-const units = {
-  teaspoon: 'tsp',
-  tablespoon: 'Tbs',
-  'fluid ounce': 'fl-oz',
-  cup: 'cup',
-  pint: 'pnt',
-  quart: 'qt',
-  gallon: 'gal',
-  ounce: 'oz',
-  pound: 'lb',
-  liter: 'l',
-}
-
-// Takes in array of strings
-const parseIngredients = (ingredients) => {
-  let parsed = ingredients.map(ingredient => {
-    let obj = parse(ingredient.toLowerCase());
-    obj.ingredient = pluralize.singular(obj.ingredient);
-    if (obj.unit) {
-      obj.unit = pluralize.singular(obj.unit);
-    }
-    return obj;
+app.post('/api/saverecipe', (req, res) => {
+  const { email, recipe } = req.body;
+  const { id, title, image } = recipe;
+  dbHelpers.saveRecipe({email: email, id: id, title: title, image: image})
+  .then((results) => {
+    console.log('SUCCESS saving recipe');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR saving recipe', err);
+    res.status(404).end();
   });
-  return parsed;
-}
-
-// Takes in two arrays of objects with quantity, unit, and ingredient properties
-const combineIngredients = (ingredients, oldIngredients) => {
-  // Converts the old ingredients array into an object
-  let ingredientsObj = {};
-  oldIngredients.forEach(ingredient => {
-    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit}
-  });
-  // Compares elements from the new ingredients array to old ingredients and converts as necessary
-  let results = [];
-  ingredients.forEach(newIngredient => {
-    let old = ingredientsObj[newIngredient.ingredient];
-    if (old && units[old.unit] && units[newIngredient.unit]) {
-      newIngredient.quantity = convert(newIngredient.quantity).from(units[newIngredient.unit]).to(units[old.unit]);
-      newIngredient.unit = old.unit;
-      let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
-      results.push(combinedWithUnits[0]);
-    } else if (old && !old.unit && !newIngredient.unit) {
-      let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
-      results.push(combinedWithoutUnits[0]);
-    } else {
-      results.push(newIngredient);
-    }
-  });
-  return results;
-};
+});
 
 
 app.post('/api/recipelist', (req, res) => {
-  //temporarily here to test server and client
-  const testRecipes = require('./testRecipes.json');
-  res.send(testRecipes);
+  extCalls.getRecipesByIngredients(req.body).then((results) => {
+    res.send(results);
+  })
 });
 
 app.post('/api/login', (req, res) => {
@@ -174,7 +138,59 @@ app.post('/api/signup', (req, res) => {
     })
   });
 });
+//Helper Functions====================================================
+const units = {
+  teaspoon: 'tsp',
+  tablespoon: 'Tbs',
+  'fluid ounce': 'fl-oz',
+  cup: 'cup',
+  pint: 'pnt',
+  quart: 'qt',
+  gallon: 'gal',
+  ounce: 'oz',
+  pound: 'lb',
+  liter: 'l',
+}
 
+// Takes in array of strings
+const parseIngredients = (ingredients) => {
+  let parsed = ingredients.map(ingredient => {
+    let obj = parse(ingredient.toLowerCase());
+    obj.ingredient = pluralize.singular(obj.ingredient);
+    if (obj.unit) {
+      obj.unit = pluralize.singular(obj.unit);
+    }
+    return obj;
+  });
+  return parsed;
+}
+
+// Takes in two arrays of objects with quantity, unit, and ingredient properties
+const combineIngredients = (ingredients, oldIngredients) => {
+  // Converts the old ingredients array into an object
+  let ingredientsObj = {};
+  ingredients.forEach(ingredient => {
+    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit }
+  });
+  // Compares elements from the new ingredients array to old ingredients and converts as necessary
+  let results = [];
+  ingredients.forEach(newIngredient => {
+    let old = ingredientsObj[newIngredient.ingredient];
+    if (old && units[old.unit] && units[newIngredient.unit]) {
+      newIngredient.quantity = convert(newIngredient.quantity).from(units[newIngredient.unit]).to(units[old.unit]);
+      newIngredient.unit = old.unit;
+      let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
+      results.push(combinedWithUnits[0]);
+    } else if (old && !old.unit && !newIngredient.unit) {
+      let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
+      results.push(combinedWithoutUnits[0]);
+    } else {
+      results.push(newIngredient);
+    }
+  });
+  return results;
+};
+//Listener====================================================
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
 });
