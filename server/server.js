@@ -12,10 +12,10 @@ const convert = require('convert-units');
 const pluralize = require('pluralize');
 
 const bcrypt = require('bcrypt');
-
+  //====================================================
 app.use(bodyParser.json());
 app.use(morgan('dev'));
-
+  //Get Requests====================================================
 app.get('/api/ingredients/:email', (req, res) => {
   const {email} = req.params;
   dbHelpers.selectIngredients({email: email}).then((results) => {
@@ -46,8 +46,18 @@ app.get('/api/recipe/:recipeId', (req, res) => {
   // res.send(testRecipe);
 });
 
+app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
+  const {recipeId, email} = req.params;
+  console.log('ID', recipeId, 'EMAIL', email)
+  dbHelpers.selectRecipe({email: email, recipeId: recipeId}).then((results) => {
+    console.log('SUCCESS selecting recipe', results);
+    res.send(results);
+  }).catch((err) => {
+    console.log('ERROR selecting recipe', err);
+  });
+});
+  //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
-  console.log('req.body: ', req.body);
   const { email, ingredients, oldIngredients, shouldReplace } = req.body;
   // let parsed = parseIngredients(ingredients);
   // if (oldIngredients && oldIngredients.length && !shouldReplace) {
@@ -63,6 +73,63 @@ app.post('/api/ingredients', (req, res) => {
   });
 });
 
+app.post('/api/saverecipe', (req, res) => {
+  const { email, recipe } = req.body;
+  const { id, title, image } = recipe;
+  dbHelpers.saveRecipe({email: email, id: id, title: title, image: image})
+  .then((results) => {
+    console.log('SUCCESS saving recipe');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR saving recipe', err);
+    res.status(404).end();
+  });
+});
+
+
+app.post('/api/recipelist', (req, res) => {
+  extCalls.getRecipesByIngredients(req.body).then((results) => {
+    res.send(results);
+  })
+});
+
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  dbHelpers.selectUser({email: email}).then(results => {
+    if (!results.length) {
+      res.end('Wrong email or password');
+    } else {
+      let user = results[0];
+      bcrypt.compare(password, user.password).then(doesMatch => {
+        if (doesMatch) {
+          res.send({ email: user.email, name: user.name});
+        } else {
+          res.end('Wrong email or password');
+        }
+      });
+    }
+  }).catch((err) => {
+    console.log('Error in retrieving user information from the database', err);
+    res.status(404).end();
+  });
+});
+
+app.post('/api/signup', (req, res) => {
+  const { email, password, name } = req.body;
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      console.log('Error in hashing user password', err);
+      res.status(404).end();
+    }
+    dbHelpers.insertUser({email: email, password: hash, name: name}).then(() =>{
+      res.end('User saved!');
+    }).catch((err) => {
+      console.log('Error in saving new user to the database', err);
+      res.status(404).end();
+    })
+  });
+});
+//Helper Functions====================================================
 const units = {
   teaspoon: 'tsp',
   tablespoon: 'Tbs',
@@ -114,51 +181,7 @@ const combineIngredients = (ingredients, oldIngredients) => {
   });
   return results;
 };
-
-
-app.post('/api/recipelist', (req, res) => {
-  extCalls.getRecipesByIngredients(req.body).then((results) => {
-    res.send(results);
-  })
-});
-
-app.post('/api/login', (req, res) => {
-  const { email, password } = req.body;
-  dbHelpers.selectUser({email: email}).then(results => {
-    if (!results.length) {
-      res.end('Wrong email or password');
-    } else {
-      let user = results[0];
-      bcrypt.compare(password, user.password).then(doesMatch => {
-        if (doesMatch) {
-          res.send({ email: user.email, name: user.name});
-        } else {
-          res.end('Wrong email or password');
-        }
-      });
-    }
-  }).catch((err) => {
-    console.log('Error in retrieving user information from the database', err);
-    res.status(404).end();
-  });
-});
-
-app.post('/api/signup', (req, res) => {
-  const { email, password, name } = req.body;
-  bcrypt.hash(password, 10, (err, hash) => {
-    if (err) {
-      console.log('Error in hashing user password', err);
-      res.status(404).end();
-    }
-    dbHelpers.insertUser({email: email, password: hash, name: name}).then(() =>{
-      res.end('User saved!');
-    }).catch((err) => {
-      console.log('Error in saving new user to the database', err);
-      res.status(404).end();
-    })
-  });
-});
-
+//Listener====================================================
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
 });
