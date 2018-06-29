@@ -17,33 +17,33 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
   //Get Requests====================================================
 app.get('/api/ingredients/:email', (req, res) => {
-  const {email} = req.params;
-  dbHelpers.selectIngredients({email: email}).then((results) => {
-    console.log('SUCCESS getting ingredients from DB');
-    res.send(results);
-  }).catch((err) => {
-    console.error('ERROR getting ingredients from DB', err);
-    res.status(404).end();
-  })
+  // const {email} = req.params;
+  // dbHelpers.selectIngredients({email: email}).then((results) => {
+  //   console.log('SUCCESS getting ingredients from DB');
+  //   res.send(results);
+  // }).catch((err) => {
+  //   console.error('ERROR getting ingredients from DB', err);
+  //   res.status(404).end();
+  // })
 
   //Uncomment if wanting to use test data
-  // const testIngredients = require('../database/testIngredients.json');
-  // res.send(testIngredients);
+  const testIngredients = require('../database/testIngredients.json');
+  res.send(testIngredients);
 });
 
 app.get('/api/recipe/:recipeId', (req, res) => {
-  const {recipeId} = req.params;
-  extCalls.getRecipeById(recipeId).then((results) => {
-    console.log('SUCCESS getting recipe from Spoonacular');
-    res.send(results);
-  }).catch((err) => {
-    console.error('ERROR getting recipe from Spoonacular', err);
-    res.status(404).end();
-  });
+  // const {recipeId} = req.params;
+  // extCalls.getRecipeById(recipeId).then((results) => {
+  //   console.log('SUCCESS getting recipe from Spoonacular');
+  //   res.send(results);
+  // }).catch((err) => {
+  //   console.error('ERROR getting recipe from Spoonacular', err);
+  //   res.status(404).end();
+  // });
 
   // Uncomment if wanting to use test data
-  // const testRecipe = require('./testRecipe.json');
-  // res.send(testRecipe);
+  const testRecipe = require('./testRecipe.json');
+  res.send(testRecipe);
 });
 
 app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
@@ -88,9 +88,11 @@ app.post('/api/saverecipe', (req, res) => {
 
 
 app.post('/api/recipelist', (req, res) => {
-  extCalls.getRecipesByIngredients(req.body).then((results) => {
-    res.send(results);
-  })
+  // extCalls.getRecipesByIngredients(req.body).then((results) => {
+  //   res.send(results);
+  // })
+  const testRecipes = require('./testRecipes.json');
+  res.send(testRecipes);
 });
 
 app.post('/api/login', (req, res) => {
