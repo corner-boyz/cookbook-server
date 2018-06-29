@@ -105,13 +105,7 @@ const insertIngredients = ({email, ingredients, shouldReplace}) => {
   
   let promises = [];
   params.forEach((param) => {    
-    promises.push(new Promise((resolve, reject) => {
-      db.raw(query, param).then((results) => {
-        resolve(results);
-      }).catch((err) => {
-        reject(err);
-      });
-    }));
+    promises.push(db.raw(query, param));
   });
   return promises;
 };

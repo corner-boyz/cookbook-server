@@ -28,18 +28,18 @@ app.get('/api/ingredients/:email', (req, res) => {
 });
 
 app.get('/api/recipe/:recipeId', (req, res) => {
-  const {recipeId} = req.params;
-  extCalls.getRecipeById(recipeId).then((results) => {
-    console.log('SUCCESS getting recipe from Spoonacular');
-    res.send(results);
-  }).catch((err) => {
-    console.error('ERROR getting recipe from Spoonacular', err);
-    res.status(404).end();
-  });
+  // const {recipeId} = req.params;
+  // extCalls.getRecipeById(recipeId).then((results) => {
+  //   console.log('SUCCESS getting recipe from Spoonacular');
+  //   res.send(results);
+  // }).catch((err) => {
+  //   console.error('ERROR getting recipe from Spoonacular', err);
+  //   res.status(404).end();
+  // });
 
   // Uncomment if wanting to use test data
-  // const testRecipe = require('./testRecipe.json');
-  // res.send(testRecipe);
+  const testRecipe = require('./testRecipe.json');
+  res.send(testRecipe);
 });
 
 app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
@@ -84,11 +84,15 @@ app.post('/api/saverecipe', (req, res) => {
 
 
 app.post('/api/recipelist', (req, res) => {
-  extCalls.getRecipesByIngredients(req.body).then((results) => {
-    res.send(results);
-  })
-  // const testRecipes = require('./testRecipes.json');
-  // res.send(testRecipes);
+  // extCalls.getRecipesByIngredients(req.body).then((results) => {
+  //   console.log('SUCCESS getting recipeList from Spoonacular');
+  //   res.send(results);
+  // }).catch((err) => {
+  //   console.log('ERROR getting recipeList from Spoonacular', err);
+  //   res.status(404).end();
+  // });
+  const testRecipes = require('./testRecipes.json');
+  res.send(testRecipes);
 });
 
 app.post('/api/login', (req, res) => {
