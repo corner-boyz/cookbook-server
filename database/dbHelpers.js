@@ -44,12 +44,10 @@ const createTables = () => {
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(email, recipeId));`
-  return new Promise ((resolve, reject) => {
-    db.raw(query).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    })
+  return db.raw(query).then((results) => {
+    return results;
+  }).catch((err) => {
+    return err;
   })
 };
 
@@ -72,35 +70,28 @@ const selectUser = ({email}) => {
 
 // Takes in object with email
 const selectIngredients = ({email}) => {
-  return new Promise((resolve, reject) => {
-    db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).orderBy('ingredient').then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
+  return db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).orderBy('ingredient').then((results) => {
+    return results;
+  }).catch((err) => {
+    return err;
   });
 };
 
 // Takes in object with email and recipeId
 const selectRecipe = ({email, recipeId}) => {
-  console.log(email)
-  return new Promise((resolve, reject) => {
-    db.select('recipeid').from('usersrecipes').where('recipeid', recipeId).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
+  return db.select('recipeid').from('usersrecipes').where('recipeid', recipeId).then((results) => {
+    return results;
+  }).catch((err) => {
+    return err;
   });
 };
   //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({email, password, name}) => {
-  return new Promise((resolve, reject) => {
-    db('users').insert({email: email, password: password, name: name}).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
+  return db('users').insert({email: email, password: password, name: name}).then((results) => {
+    return results;
+  }).catch((err) => {
+    return err;
   });
 };
 
@@ -154,12 +145,10 @@ const insertRecipe = (recipe) => {
     WHERE NOT EXISTS (
       SELECT recipeId FROM recipes WHERE recipeId = :id
   );`
-  return new Promise((resolve, reject) => {
-    db.raw(query, recipe).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
+  return db.raw(query, recipe).then((results) => {
+    return results;
+  }).catch((err) => {
+    return err;
   });
 };
 
@@ -171,12 +160,10 @@ const insertUsersRecipe = (recipe) => {
           SELECT * FROM usersRecipes WHERE email = :email AND recipeId = :id
         );`;
 
-  return new Promise((resolve, reject) => {
-    db.raw(query, recipe).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
+  return db.raw(query, recipe).then((results) => {
+    return results;
+  }).catch((err) => {
+    return err;
   });
 };
 
