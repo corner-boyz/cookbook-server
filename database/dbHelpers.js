@@ -133,7 +133,7 @@ const insertUsersRecipe = (recipe) => {
 const saveRecipe = (recipe) => {
   return new Promise((resolve, reject) => {
     insertRecipe(recipe).then((results) => {
-      console.log('SUCCESS inserting into recipes', recipe);
+      // console.log('SUCCESS inserting into recipes', recipe);
       insertUsersRecipe(recipe).then((results) => {
         console.log('SUCCESS inserting into usersRecipes');
         resolve(results);
