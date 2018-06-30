@@ -70,7 +70,7 @@ const selectUser = ({ email }) => {
 
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
-  return db.select('ingredient', 'quantity', 'unit').from(table).where('email', email).orderBy('ingredient');
+  return db.select('*').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
