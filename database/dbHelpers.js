@@ -148,8 +148,14 @@ const saveRecipe = (recipe) => {
   });
 }
 //====================================================
+const deleteRecipe = (params) => {
+  const query = `DELETE FROM usersrecipes
+    WHERE email = :email AND recipeid = :id`;
+  return db.raw(query, params);
+}
+
 const deleteIngredients = ({ email, table }) => {
-  let query = `DELETE FROM ${table}
+  const query = `DELETE FROM ${table}
     WHERE email = :email AND quantity = 0`;
   return db.raw(query, { email });
 }
@@ -165,6 +171,7 @@ module.exports = {
   insertUser,
   insertIngredients,
   saveRecipe,
+  deleteRecipe,
   selectRecipe,
   deleteIngredients,
   fetchUserRecipes,
