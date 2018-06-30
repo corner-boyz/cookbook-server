@@ -44,13 +44,7 @@ const createTables = () => {
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(email, recipeId));`
-  return new Promise((resolve, reject) => {
-    db.raw(query).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    })
-  })
+  return db.raw(query);
 };
 
 createTables().then((results) => {
@@ -60,53 +54,28 @@ createTables().then((results) => {
 });
 //====================================================
 // Takes in object with email
-const selectUser = ({ email }) => {
-  return new Promise((resolve, reject) => {
-    db.select('email', 'name', 'password').from('users').where('email', email).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
+const selectUser = ({email}) => {
+  return db.select('email', 'name', 'password').from('users').where('email', email);
 };
 
 // Takes in object with email
-const selectIngredients = ({ email }) => {
-  return new Promise((resolve, reject) => {
-    db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).orderBy('ingredient').then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
+const selectIngredients = ({email, table}) => {
+  return db.select('ingredient', 'quantity', 'unit').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
-const selectRecipe = ({ email, recipeId }) => {
-  console.log(email)
-  return new Promise((resolve, reject) => {
-    db.select('recipeid').from('usersrecipes').where('recipeid', recipeId).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
+const selectRecipe = ({email, recipeId}) => {
+  return db.select('recipeid').from('usersrecipes').where('recipeid', recipeId);
 };
 //====================================================
 // Takes in object with email, password, and name
-const insertUser = ({ email, password, name }) => {
-  return new Promise((resolve, reject) => {
-    db('users').insert({ email: email, password: password, name: name }).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
+const insertUser = ({email, password, name}) => {
+  return db('users').insert({email: email, password: password, name: name});
 };
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({ email, ingredients, shouldReplace }) => {
+const insertIngredients = ({email, ingredients, shouldReplace, table }) => {
   console.log('increment', shouldReplace);
   let params = []
   if (Array.isArray(ingredients)) {
@@ -120,14 +89,14 @@ const insertIngredients = ({ email, ingredients, shouldReplace }) => {
   let query = '';
   if (shouldReplace) {
     query = `INSERT INTO 
-      ingredients (email, ingredient, quantity, unit) 
+      ${table} (email, ingredient, quantity, unit) 
       VALUES(:email, :ingredient, :quantity, :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
       SET quantity = :quantity, unit = :unit`;
   } else {
     query = `INSERT INTO 
-      ingredients (email, ingredient, quantity, unit) 
+      ${table} (email, ingredient, quantity, unit) 
       VALUES(:email, :ingredient, :quantity, :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
@@ -135,14 +104,8 @@ const insertIngredients = ({ email, ingredients, shouldReplace }) => {
   }
 
   let promises = [];
-  params.forEach((param) => {
-    promises.push(new Promise((resolve, reject) => {
-      db.raw(query, param).then((results) => {
-        resolve(results);
-      }).catch((err) => {
-        reject(err);
-      });
-    }));
+  params.forEach((param) => {    
+    promises.push(db.raw(query, param));
   });
   return promises;
 };
@@ -154,13 +117,7 @@ const insertRecipe = (recipe) => {
     WHERE NOT EXISTS (
       SELECT recipeId FROM recipes WHERE recipeId = :id
   );`
-  return new Promise((resolve, reject) => {
-    db.raw(query, recipe).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
+  return db.raw(query, recipe);
 };
 
 const insertUsersRecipe = (recipe) => {
@@ -171,13 +128,7 @@ const insertUsersRecipe = (recipe) => {
           SELECT * FROM usersRecipes WHERE email = :email AND recipeId = :id
         );`;
 
-  return new Promise((resolve, reject) => {
-    db.raw(query, recipe).then((results) => {
-      resolve(results);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
+  return db.raw(query, recipe);
 };
 
 const saveRecipe = (recipe) => {

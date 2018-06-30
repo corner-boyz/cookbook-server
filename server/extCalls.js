@@ -16,44 +16,34 @@ const getRecipesByIngredients = (ingredients) => {
   } else {
     q = ingredients;
   }
-  return new Promise((resolve, reject) => {
-    axios.get(url + q,
-      {
-        'headers': {
-          'X-Mashape-Key': process.env.SPOONACULAR_KEY,
-          'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'
-        }
-      })
-      .then((results) => {
-        console.log('REQUESTS REMAINING:', results.headers['x-ratelimit-requests-remaining']);
-        console.log('RESULTS REMAINING:', results.headers['x-ratelimit-results-remaining']);
-        resolve(results.data);
-      }).catch((err) => {
-        reject(err);
-      });
-  });
+  
+  return axios.get(url + q,
+    {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
+    'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
+    .then((results) => {
+      console.log('REQUESTS REMAINING:', results.headers['x-ratelimit-requests-remaining']);
+      console.log('RESULTS REMAINING:', results.headers['x-ratelimit-results-remaining']);
+      return results.data;
+    }).catch((err) => {
+      return err;
+    });
+  
 }
 
 const getRecipeById = (id) => {
   const firstHalf = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/';
   const lastHalf = '/information?includeNutrition=true'
-
-  return new Promise((resolve, reject) => {
-    axios.get(firstHalf + id + lastHalf,
-      {
-        'headers': {
-          'X-Mashape-Key': process.env.SPOONACULAR_KEY,
-          'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'
-        }
-      })
-      .then((results) => {
-        console.log('REQUESTS REMAINING:', results.headers['x-ratelimit-requests-remaining']);
-        console.log('RESULTS REMAINING:', results.headers['x-ratelimit-results-remaining']);
-        resolve(results.data);
-      }).catch((err) => {
-        reject(err);
-      });
-  });
+  
+  return axios.get(firstHalf + id + lastHalf,
+    {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
+    'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
+    .then((results) => {
+      console.log('REQUESTS REMAINING:', results.headers['x-ratelimit-requests-remaining']);
+      console.log('RESULTS REMAINING:', results.headers['x-ratelimit-results-remaining']);
+      return results.data;
+    }).catch((err) => {
+      return err;
+    });
 }
 
 module.exports = {

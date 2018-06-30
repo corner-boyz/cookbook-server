@@ -12,23 +12,43 @@ const convert = require('convert-units');
 const pluralize = require('pluralize');
 
 const bcrypt = require('bcrypt');
+
 //====================================================
 app.use(bodyParser.json());
 app.use(morgan('dev'));
+
+// This is necessary to receive requests from the Chrome extension
+const allowCrossDomain = (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+};
+app.use(allowCrossDomain);
+
 //Get Requests====================================================
 app.get('/api/ingredients/:email', (req, res) => {
   const { email } = req.params;
-  dbHelpers.selectIngredients({ email: email }).then((results) => {
+  const table = 'ingredients';
+  dbHelpers.selectIngredients({ email: email, table: table }).then((results) => {
     console.log('SUCCESS getting ingredients from DB');
     res.send(results);
   }).catch((err) => {
     console.error('ERROR getting ingredients from DB', err);
     res.status(404).end();
   })
+});
 
-  //Uncomment if wanting to use test data
-  // const testIngredients = require('../database/testIngredients.json');
-  // res.send(testIngredients);
+app.get('/api/grocerylist/:email', (req, res) => {
+  const { email } = req.params;
+  const table = 'grocerylist';
+  dbHelpers.selectIngredients({ email: email, table: table }).then((results) => {
+    console.log('SUCCESS getting ingredients from DB');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR getting ingredients from DB', err);
+    res.status(404).end();
+  })
 });
 
 app.get('/api/recipe/:recipeId', (req, res) => {
@@ -56,14 +76,15 @@ app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
     console.log('ERROR selecting recipe', err);
   });
 });
+
 //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
-  const { email, ingredients, oldIngredients, shouldReplace } = req.body;
-  // let parsed = parseIngredients(ingredients);
-  // if (oldIngredients && oldIngredients.length && !shouldReplace) {
-  //   parsed = combineIngredients(parsed, oldIngredients);
-  // }
-  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace }))
+  const { email, ingredients, shouldReplace } = req.body;
+  const table = 'ingredients';
+  ingredients.forEach(object => {
+    object.ingredient = pluralize.singular(object.ingredient);
+  });
+  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results);
       res.send(results);
@@ -71,6 +92,32 @@ app.post('/api/ingredients', (req, res) => {
       console.error('ERROR inserting ingredients', err);
       res.status(404).end();
     });
+});
+
+app.post('/api/grocerylist', (req, res) => {
+  const { email, ingredients, shouldReplace } = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    object.ingredient = pluralize.singular(object.ingredient);
+  });
+  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+    .then((results) => {
+      console.log('SUCCESS inserting ingredients', results);
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR inserting ingredients', err);
+      res.status(404).end();
+    });
+});
+
+app.post('/api/combine', (req, res) => {
+  const { ingredients, oldIngredients } = req.body;
+  res.send(combineIngredients(ingredients, oldIngredients));
+});
+
+app.post('/api/parse', (req, res) => {
+  const { ingredients } = req.body;
+  res.send(parseIngredients(ingredients));
 });
 
 app.post('/api/saverecipe', (req, res) => {
@@ -86,11 +133,14 @@ app.post('/api/saverecipe', (req, res) => {
     });
 });
 
-
 app.post('/api/recipelist', (req, res) => {
   // extCalls.getRecipesByIngredients(req.body).then((results) => {
+  //   console.log('SUCCESS getting recipeList from Spoonacular');
   //   res.send(results);
-  // })
+  // }).catch((err) => {
+  //   console.log('ERROR getting recipeList from Spoonacular', err);
+  //   res.status(404).end();
+  // });
   const testRecipes = require('./testRecipes.json');
   res.send(testRecipes);
 });
@@ -131,6 +181,7 @@ app.post('/api/signup', (req, res) => {
     })
   });
 });
+
 //Helper Functions====================================================
 const units = {
   teaspoon: 'tsp',
@@ -143,15 +194,23 @@ const units = {
   ounce: 'oz',
   pound: 'lb',
   liter: 'l',
-}
+};
+
+const unitsList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'oz', 'lb', 'l'];
 
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
   let parsed = ingredients.map(ingredient => {
+    // Create object using 'recipe ingredient parser' module
     let obj = parse(ingredient.toLowerCase());
+    // Convert to singular
     obj.ingredient = pluralize.singular(obj.ingredient);
     if (obj.unit) {
       obj.unit = pluralize.singular(obj.unit);
+      // Convert to abbreviation
+      if (units[obj.unit]) {
+        obj.unit = units[obj.unit];
+      }
     }
     return obj;
   });
@@ -162,20 +221,20 @@ const parseIngredients = (ingredients) => {
 const combineIngredients = (ingredients, oldIngredients) => {
   // Converts the old ingredients array into an object
   let ingredientsObj = {};
-  ingredients.forEach(ingredient => {
+  oldIngredients.forEach(ingredient => {
     ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit }
   });
   // Compares elements from the new ingredients array to old ingredients and converts as necessary
   let results = [];
   ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
-    if (old && units[old.unit] && units[newIngredient.unit]) {
-      newIngredient.quantity = convert(newIngredient.quantity).from(units[newIngredient.unit]).to(units[old.unit]);
+    if (old && unitsList.includes(old.unit) && unitsList.includes(newIngredient.unit)) {
+      newIngredient.quantity = convert(newIngredient.quantity).from(newIngredient.unit).to(old.unit);
       newIngredient.unit = old.unit;
       let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
       results.push(combinedWithUnits[0]);
     } else if (old && !old.unit && !newIngredient.unit) {
-      let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
+      let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: null, ingredient: newIngredient.ingredient }]);
       results.push(combinedWithoutUnits[0]);
     } else {
       results.push(newIngredient);
