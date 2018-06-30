@@ -32,6 +32,16 @@ const createTables = () => {
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(ingredient, email)
   );
+  CREATE TABLE IF NOT EXISTS groceryList(
+    ingredient TEXT NOT NULL,
+    email TEXT NOT NULL REFERENCES users(email),
+    quantity REAL,
+    unit TEXT,
+    isPurchased boolean DEFAULT FALSE,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY(ingredient, email)
+  );
   CREATE TABLE IF NOT EXISTS recipes(
     recipeId TEXT NOT NULL PRIMARY KEY,
     title TEXT,
@@ -60,7 +70,7 @@ const selectUser = ({ email }) => {
 
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
-  return db.select('ingredient', 'quantity', 'unit').from(table).where('email', email).orderBy('ingredient');
+  return db.select('*').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId

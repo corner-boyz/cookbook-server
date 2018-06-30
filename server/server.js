@@ -268,6 +268,9 @@ const combineIngredients = (ingredients, oldIngredients) => {
   });
   return results;
 };
+
+console.log(combineIngredients([{ingredient: 'apple', quantity: 2, unit: 'oz'}], 
+  [{ingredient: 'apple', quantity: 3, unit: 'lb'}]));
 //Listener====================================================
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
