@@ -145,6 +145,16 @@ app.post('/api/recipelist', (req, res) => {
     console.log('ERROR getting recipeList from Spoonacular', err);
     res.status(404).end();
   });
+});
+
+app.post('/api/recipelist', (req, res) => {
+  extCalls.getRecipesByIngredients(req.body).then((results) => {
+    console.log('SUCCESS getting recipeList from Spoonacular');
+    res.send(results);
+  }).catch((err) => {
+    console.log('ERROR getting recipeList from Spoonacular', err);
+    res.status(404).end();
+  });
   // const testRecipes = require('./testRecipes.json');
   // res.send(testRecipes);
 });
