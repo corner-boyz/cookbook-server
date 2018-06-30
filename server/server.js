@@ -107,19 +107,19 @@ app.post('/api/ingredients', (req, res) => {
 });
 
 app.post('/api/grocerylist', (req, res) => {
-  // const { email, ingredients, shouldReplace } = req.body;
-  // const table = 'grocerylist';
-  // ingredients.forEach(object => {
-  //   object.ingredient = pluralize.singular(object.ingredient);
-  // });
-  // Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-  //   .then((results) => {
-  //     console.log('SUCCESS inserting ingredients', results);
-  //     res.send(results);
-  //   }).catch((err) => {
-  //     console.error('ERROR inserting ingredients', err);
-  //     res.status(404).end();
-  //   });
+  const { email, ingredients, shouldReplace } = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    object.ingredient = pluralize.singular(object.ingredient);
+  });
+  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+    .then((results) => {
+      console.log('SUCCESS inserting ingredients', results);
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR inserting ingredients', err);
+      res.status(404).end();
+    });
 });
 
 app.post('/api/combine', (req, res) => {
