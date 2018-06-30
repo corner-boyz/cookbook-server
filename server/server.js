@@ -29,7 +29,20 @@ app.use(allowCrossDomain);
   //Get Requests====================================================
 app.get('/api/ingredients/:email', (req, res) => {
   const {email} = req.params;
-  dbHelpers.selectIngredients({email: email}).then((results) => {
+  const table = 'ingredients';
+  dbHelpers.selectIngredients({email: email, table: table}).then((results) => {
+    console.log('SUCCESS getting ingredients from DB');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR getting ingredients from DB', err);
+    res.status(404).end();
+  })
+});
+
+app.get('/api/grocerylist/:email', (req, res) => {
+  const {email} = req.params;
+  const table = 'grocerylist';
+  dbHelpers.selectIngredients({email: email, table: table}).then((results) => {
     console.log('SUCCESS getting ingredients from DB');
     res.send(results);
   }).catch((err) => {
@@ -67,10 +80,27 @@ app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
   //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
+  const table = 'ingredients';
   ingredients.forEach(object => {
     object.ingredient = pluralize.singular(object.ingredient);
   });
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace}))
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table}))
+    .then((results) => {
+      console.log('SUCCESS inserting ingredients', results);
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR inserting ingredients', err);
+      res.status(404).end();
+  });
+});
+
+app.post('/api/grocerylist', (req, res) => {
+  const { email, ingredients, shouldReplace } = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    object.ingredient = pluralize.singular(object.ingredient);
+  });
+  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table}))
     .then((results) => {
       console.log('SUCCESS inserting ingredients', results);
       res.send(results);
