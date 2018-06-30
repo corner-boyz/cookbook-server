@@ -159,6 +159,7 @@ app.patch('/api/saverecipe', (req, res) => {
 });
 
 app.post('/api/recipelist', (req, res) => {
+  console.log('search', req.body)
   extCalls.getRecipesByIngredients(req.body).then((results) => {
     console.log('SUCCESS getting recipeList from Spoonacular');
     res.send(results);
