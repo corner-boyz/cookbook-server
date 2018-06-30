@@ -77,6 +77,14 @@ app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
   });
 });
 
+app.get('/api/userRecipes/:email', (req, res) => {
+  const { email } = req.params;
+  // console.log('Server - Email: ', email);
+  dbHelpers.fetchUserRecipes({ email: email })
+    .then((results) => {
+      res.send(results);
+    })
+})
   //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
