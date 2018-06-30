@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const getRecipesByIngredients = (ingredients) => {
   // Turn passed in ingredients into query string
-  const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=5&limitLicense=false&ranking=10&fillIngredients=true&ingredients=';
+  const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=10&limitLicense=false&ranking=10&fillIngredients=true&ingredients=';
   // const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=1&limitLicense=false&ranking=10&fillIngredients=true&ingredients=';
   let q = '';
   if (Array.isArray(ingredients)) {
