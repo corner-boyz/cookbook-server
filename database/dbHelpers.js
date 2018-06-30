@@ -75,8 +75,7 @@ const insertUser = ({email, password, name}) => {
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({email, ingredients, shouldReplace, table }) => {
-  console.log('increment', shouldReplace);
+const insertIngredients = ({email, ingredients, shouldReplace, table}) => {
   let params = []
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ingredient, quantity, unit}) => {
@@ -149,11 +148,18 @@ const saveRecipe = (recipe) => {
   });
 }
   //====================================================
+const deleteIngredients = ({email, table }) => {
+  let query = `DELETE FROM ${table}
+    WHERE email = :email AND quantity = 0`;
+  return db.raw(query, {email});
+}
+  //====================================================
 module.exports = {
   selectUser,
   selectIngredients,
   insertUser,
   insertIngredients,
   saveRecipe,
-  selectRecipe
+  selectRecipe,
+  deleteIngredients
 };

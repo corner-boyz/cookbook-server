@@ -86,7 +86,10 @@ app.post('/api/ingredients', (req, res) => {
   });
   Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table}))
     .then((results) => {
-      console.log('SUCCESS inserting ingredients', results);
+      console.log('SUCCESS inserting ingredients');
+      dbHelpers.deleteIngredients({email: email, table: table}).then((reults) => {
+        console.log('SUCCESS deleting ingredients with 0 quantities');
+      })
       res.send(results);
     }).catch((err) => {
       console.error('ERROR inserting ingredients', err);
