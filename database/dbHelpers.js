@@ -32,6 +32,16 @@ const createTables = () => {
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(ingredient, email)
   );
+  CREATE TABLE IF NOT EXISTS groceryList(
+    ingredient TEXT NOT NULL,
+    email TEXT NOT NULL REFERENCES users(email),
+    quantity REAL,
+    unit TEXT,
+    isPurchased boolean DEFAULT FALSE,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY(ingredient, email)
+  );
   CREATE TABLE IF NOT EXISTS recipes(
     recipeId TEXT NOT NULL PRIMARY KEY,
     title TEXT,
