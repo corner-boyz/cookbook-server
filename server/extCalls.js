@@ -9,13 +9,12 @@ const getRecipesByIngredients = (ingredients) => {
       if (i !== ingredients.length - 1) {
         q += `${ingredient.ingredient},`;
       } else {
-        q += ingredient;
+        q += ingredient.ingredient;
       }
     })
   } else {
     q = ingredients;
   }
-  
   return axios.get(url + q,
     {'headers': {'X-Mashape-Key': process.env.SPOONACULAR_KEY,
     'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'}})
