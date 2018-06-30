@@ -43,14 +43,14 @@ const createTables = () => {
     PRIMARY KEY(ingredient, email)
   );
   CREATE TABLE IF NOT EXISTS recipes(
-    recipeId TEXT NOT NULL PRIMARY KEY,
+    recipeId INT NOT NULL PRIMARY KEY,
     title TEXT,
     imageUrl TEXT,
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW());
   CREATE TABLE IF NOT EXISTS usersRecipes(
     email TEXT NOT NULL REFERENCES users(email),
-    recipeId TEXT NOT NULL REFERENCES recipes(recipeId),
+    recipeId INT NOT NULL REFERENCES recipes(recipeId),
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(email, recipeId));`
