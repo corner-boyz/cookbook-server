@@ -59,8 +59,8 @@ const selectUser = ({email}) => {
 };
 
 // Takes in object with email
-const selectIngredients = ({email}) => {
-  return db.select('ingredient', 'quantity', 'unit').from('ingredients').where('email', email).orderBy('ingredient');
+const selectIngredients = ({email, table}) => {
+  return db.select('ingredient', 'quantity', 'unit').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
@@ -75,7 +75,7 @@ const insertUser = ({email, password, name}) => {
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({email, ingredients, shouldReplace}) => {
+const insertIngredients = ({email, ingredients, shouldReplace, table }) => {
   console.log('increment', shouldReplace);
   let params = []
   if (Array.isArray(ingredients)) {
@@ -89,14 +89,14 @@ const insertIngredients = ({email, ingredients, shouldReplace}) => {
   let query = '';
   if (shouldReplace) {
     query = `INSERT INTO 
-      ingredients (email, ingredient, quantity, unit) 
+      ${table} (email, ingredient, quantity, unit) 
       VALUES(:email, :ingredient, :quantity, :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
       SET quantity = :quantity, unit = :unit`;
   } else {
     query = `INSERT INTO 
-      ingredients (email, ingredient, quantity, unit) 
+      ${table} (email, ingredient, quantity, unit) 
       VALUES(:email, :ingredient, :quantity, :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
