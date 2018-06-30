@@ -115,11 +115,18 @@ const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
   } else if (table === 'grocerylist') {
     if (shouldReplace) {
       query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit, ispurchased) 
-        VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+          ${table} (email, ingredient, quantity, unit, ispurchased) 
+          VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
+          ON CONFLICT(email, ingredient) 
+          DO UPDATE
+          SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+       let holder = `INSERT INTO ingredients (email, ingredient, quantity, unit)
+          SELECT email, ingredient, quantity, unit
+            FROM ${table}
+            WHERE email = :email AND :ispurchased = TRUE
+          ON CONFLICT(ingredients.email, ingredients.ingredient)
+          DO UPDATE
+          SET ingredient.quantity = ingredient.quantity + :quantity, unit = :unit`;
     } else {
       query = `INSERT INTO 
         ${table} (email, ingredient, quantity, unit) 

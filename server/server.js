@@ -116,7 +116,11 @@ app.post('/api/grocerylist', (req, res) => {
   Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
     .then((results) => {
       console.log('SUCCESS inserting into groceryList', results);
-      res.send(results);
+      dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
+        console.log('SUCCESS deleting groceries with 0 quantities');
+      }).then((results) => {
+        res.send(results);
+      });
     }).catch((err) => {
       console.error('ERROR inserting into groceryList', err);
       res.status(404).end();
