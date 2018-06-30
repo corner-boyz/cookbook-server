@@ -54,28 +54,28 @@ createTables().then((results) => {
 });
 //====================================================
 // Takes in object with email
-const selectUser = ({email}) => {
+const selectUser = ({ email }) => {
   return db.select('email', 'name', 'password').from('users').where('email', email);
 };
 
 // Takes in object with email
-const selectIngredients = ({email, table}) => {
+const selectIngredients = ({ email, table }) => {
   return db.select('ingredient', 'quantity', 'unit').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
-const selectRecipe = ({email, recipeId}) => {
+const selectRecipe = ({ email, recipeId }) => {
   return db.select('recipeid').from('usersrecipes').where('recipeid', recipeId);
 };
 //====================================================
 // Takes in object with email, password, and name
-const insertUser = ({email, password, name}) => {
-  return db('users').insert({email: email, password: password, name: name});
+const insertUser = ({ email, password, name }) => {
+  return db('users').insert({ email: email, password: password, name: name });
 };
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({email, ingredients, shouldReplace, table}) => {
+const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
   let params = []
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ ingredient, quantity, unit }) => {
@@ -103,7 +103,7 @@ const insertIngredients = ({email, ingredients, shouldReplace, table}) => {
   }
 
   let promises = [];
-  params.forEach((param) => {    
+  params.forEach((param) => {
     promises.push(db.raw(query, param));
   });
   return promises;
@@ -147,13 +147,18 @@ const saveRecipe = (recipe) => {
     });
   });
 }
-  //====================================================
-const deleteIngredients = ({email, table }) => {
+//====================================================
+const deleteIngredients = ({ email, table }) => {
   let query = `DELETE FROM ${table}
     WHERE email = :email AND quantity = 0`;
-  return db.raw(query, {email});
+  return db.raw(query, { email });
 }
-  //====================================================
+
+const fetchUserRecipes = ({ email }) => {
+  // console.log('DB: ', email);
+  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where('email', email)
+}
+//====================================================
 module.exports = {
   selectUser,
   selectIngredients,
@@ -161,5 +166,6 @@ module.exports = {
   insertIngredients,
   saveRecipe,
   selectRecipe,
-  deleteIngredients
+  deleteIngredients,
+  fetchUserRecipes,
 };

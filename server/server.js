@@ -52,7 +52,7 @@ app.get('/api/grocerylist/:email', (req, res) => {
 });
 
 app.get('/api/recipe/:recipeId', (req, res) => {
-  const {recipeId} = req.params;
+  const { recipeId } = req.params;
   extCalls.getRecipeById(recipeId).then((results) => {
     console.log('SUCCESS getting recipe from Spoonacular');
     res.send(results);
@@ -77,6 +77,15 @@ app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
   });
 });
 
+app.get('/api/userRecipes/:email', (req, res) => {
+  const { email } = req.params;
+  // console.log('Server - Email: ', email);
+  dbHelpers.fetchUserRecipes({ email: email })
+    .then((results) => {
+      res.send(results);
+    })
+})
+
 //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
@@ -87,7 +96,7 @@ app.post('/api/ingredients', (req, res) => {
   Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
     .then((results) => {
       console.log('SUCCESS inserting ingredients');
-      dbHelpers.deleteIngredients({email: email, table: table}).then((results) => {
+      dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
         console.log('SUCCESS deleting ingredients with 0 quantities');
       }).then((results) => {
         res.send(results);
