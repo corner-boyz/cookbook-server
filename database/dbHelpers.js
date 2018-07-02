@@ -115,18 +115,11 @@ const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
   } else if (table === 'grocerylist') {
     if (shouldReplace) {
       query = `INSERT INTO 
-          ${table} (email, ingredient, quantity, unit, ispurchased) 
-          VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
-          ON CONFLICT(email, ingredient) 
-          DO UPDATE
-          SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
-       let holder = `INSERT INTO ingredients (email, ingredient, quantity, unit)
-          SELECT email, ingredient, quantity, unit
-            FROM ${table}
-            WHERE email = :email AND :ispurchased = TRUE
-          ON CONFLICT(ingredients.email, ingredients.ingredient)
-          DO UPDATE
-          SET ingredient.quantity = ingredient.quantity + :quantity, unit = :unit`;
+        ${table} (email, ingredient, quantity, unit, ispurchased) 
+        VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
+        ON CONFLICT(email, ingredient) 
+        DO UPDATE
+        SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
     } else {
       query = `INSERT INTO 
         ${table} (email, ingredient, quantity, unit) 
@@ -143,6 +136,17 @@ const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
   });
   return promises;
 };
+
+const groceryListIntoIngredients = (params) => {
+  const query = `INSERT INTO ingredients (email, ingredient, quantity, unit)
+      SELECT email, ingredient, quantity, unit
+        FROM grocerylist
+        WHERE email = :email 
+        AND ispurchased = TRUE
+      ON CONFLICT(email, ingredient)
+        DO UPDATE SET quantity = ingredients.quantity + excluded.quantity;`;
+  return db.raw(query, params);
+}
 
 const insertRecipe = (recipe) => {
   const query = `INSERT INTO
@@ -195,6 +199,12 @@ const deleteIngredients = ({ email, table }) => {
   return db.raw(query, { email });
 }
 
+const deleteGroceries = ({ email, table }) => {
+  const query = `DELETE FROM ${table}
+    WHERE email = :email AND (quantity = 0 OR ispurchased = TRUE)`;
+  return db.raw(query, { email });
+}
+
 const fetchUserRecipes = ({ email }) => {
   // console.log('DB: ', email);
   return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where('email', email)
@@ -207,7 +217,9 @@ module.exports = {
   insertIngredients,
   saveRecipe,
   deleteRecipe,
+  deleteGroceries,
   selectRecipe,
   deleteIngredients,
   fetchUserRecipes,
+  groceryListIntoIngredients
 };
