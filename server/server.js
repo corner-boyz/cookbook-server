@@ -99,7 +99,7 @@ app.post('/api/ingredients', (req, res) => {
         console.log('SUCCESS deleting ingredients with 0 quantities');
       }).then((results) => {
         res.send(results);
-      })
+      });
     }).catch((err) => {
       console.error('ERROR inserting ingredients', err);
       res.status(404).end();
@@ -107,17 +107,27 @@ app.post('/api/ingredients', (req, res) => {
 });
 
 app.post('/api/grocerylist', (req, res) => {
-  const { email, ingredients, shouldReplace } = req.body;
+  const { email, ingredients, shouldReplace} = req.body;
+  // console.log('PURCHASE', ingredients[0].ispurchased)
   const table = 'grocerylist';
   ingredients.forEach(object => {
     object.ingredient = pluralize.singular(object.ingredient);
   });
   Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
     .then((results) => {
-      console.log('SUCCESS inserting ingredients', results);
+      console.log('SUCCESS inserting into groceryList', results);
+      return dbHelpers.groceryListIntoIngredients({email: email});
+    })
+    .then((results) => {
+      console.log('SUCCESS inserting into ingredients from groceryList');
+      return dbHelpers.deleteGroceries({ email: email, table: table });
+    })
+    .then((results) => {
+      console.log('SUCCESS deleting groceries with 0 quantities');
       res.send(results);
-    }).catch((err) => {
-      console.error('ERROR inserting ingredients', err);
+    })
+    .catch((err) => {
+      console.error('ERROR inserting into groceryList', err);
       res.status(404).end();
     });
 });
@@ -268,6 +278,9 @@ const combineIngredients = (ingredients, oldIngredients) => {
   });
   return results;
 };
+
+console.log(combineIngredients([{ingredient: 'apple', quantity: 2, unit: 'oz'}], 
+  [{ingredient: 'apple', quantity: 3, unit: 'lb'}]));
 //Listener====================================================
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
