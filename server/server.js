@@ -26,24 +26,33 @@ const allowCrossDomain = (req, res, next) => {
 };
 app.use(allowCrossDomain);
 
-  //Get Requests====================================================
+//Get Requests====================================================
 app.get('/api/ingredients/:email', (req, res) => {
-  const {email} = req.params;
-  dbHelpers.selectIngredients({email: email}).then((results) => {
+  const { email } = req.params;
+  const table = 'ingredients';
+  dbHelpers.selectIngredients({ email: email, table: table }).then((results) => {
     console.log('SUCCESS getting ingredients from DB');
     res.send(results);
   }).catch((err) => {
     console.error('ERROR getting ingredients from DB', err);
     res.status(404).end();
   })
+});
 
-  //Uncomment if wanting to use test data
-  // const testIngredients = require('../database/testIngredients.json');
-  // res.send(testIngredients);
+app.get('/api/grocerylist/:email', (req, res) => {
+  const { email } = req.params;
+  const table = 'grocerylist';
+  dbHelpers.selectIngredients({ email: email, table: table }).then((results) => {
+    console.log('SUCCESS getting ingredients from DB');
+    res.send(results);
+  }).catch((err) => {
+    console.error('ERROR getting ingredients from DB', err);
+    res.status(404).end();
+  })
 });
 
 app.get('/api/recipe/:recipeId', (req, res) => {
-  const {recipeId} = req.params;
+  const { recipeId } = req.params;
   extCalls.getRecipeById(recipeId).then((results) => {
     console.log('SUCCESS getting recipe from Spoonacular');
     res.send(results);
@@ -58,9 +67,9 @@ app.get('/api/recipe/:recipeId', (req, res) => {
 });
 
 app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
-  const {recipeId, email} = req.params;
+  const { recipeId, email } = req.params;
   console.log('ID', recipeId, 'EMAIL', email)
-  dbHelpers.selectRecipe({email: email, recipeId: recipeId}).then((results) => {
+  dbHelpers.selectRecipe({ email: email, recipeId: recipeId }).then((results) => {
     console.log('SUCCESS selecting recipe', results);
     res.send(results);
   }).catch((err) => {
@@ -68,20 +77,59 @@ app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
   });
 });
 
-  //Post Requests====================================================
+app.get('/api/userRecipes/:email', (req, res) => {
+  const { email } = req.params;
+  // console.log('Server - Email: ', email);
+  dbHelpers.fetchUserRecipes({ email: email })
+    .then((results) => {
+      res.send(results);
+    })
+})
+//Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
+  const table = 'ingredients';
   ingredients.forEach(object => {
     object.ingredient = pluralize.singular(object.ingredient);
   });
-  Promise.all(dbHelpers.insertIngredients({email: email, ingredients: ingredients, shouldReplace: shouldReplace}))
+  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
     .then((results) => {
-      console.log('SUCCESS inserting ingredients', results);
-      res.send(results);
+      console.log('SUCCESS inserting ingredients');
+      dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
+        console.log('SUCCESS deleting ingredients with 0 quantities');
+      }).then((results) => {
+        res.send(results);
+      });
     }).catch((err) => {
       console.error('ERROR inserting ingredients', err);
       res.status(404).end();
+    });
+});
+
+app.post('/api/grocerylist', (req, res) => {
+  const { email, ingredients, shouldReplace} = req.body;
+  // console.log('PURCHASE', ingredients[0].ispurchased)
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    object.ingredient = pluralize.singular(object.ingredient);
   });
+  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+    .then((results) => {
+      console.log('SUCCESS inserting into groceryList', results);
+      return dbHelpers.groceryListIntoIngredients({email: email});
+    })
+    .then((results) => {
+      console.log('SUCCESS inserting into ingredients from groceryList');
+      return dbHelpers.deleteGroceries({ email: email, table: table });
+    })
+    .then((results) => {
+      console.log('SUCCESS deleting groceries with 0 quantities');
+      res.send(results);
+    })
+    .catch((err) => {
+      console.error('ERROR inserting into groceryList', err);
+      res.status(404).end();
+    });
 });
 
 app.post('/api/combine', (req, res) => {
@@ -105,32 +153,52 @@ app.post('/api/parse', (req, res) => {
 app.post('/api/saverecipe', (req, res) => {
   const { email, recipe } = req.body;
   const { id, title, image } = recipe;
-  dbHelpers.saveRecipe({email: email, id: id, title: title, image: image})
-  .then((results) => {
-    console.log('SUCCESS saving recipe');
-    res.send(results);
-  }).catch((err) => {
-    console.error('ERROR saving recipe', err);
-    res.status(404).end();
-  });
+  dbHelpers.saveRecipe({ email: email, id: id, title: title, image: image })
+    .then((results) => {
+      console.log('SUCCESS saving recipe');
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR saving recipe', err);
+      res.status(404).end();
+    });
+});
+
+app.patch('/api/saverecipe', (req, res) => {
+  const { email, recipe } = req.body;
+  const { id } = recipe;
+  dbHelpers.deleteRecipe({ email: email, id: id })
+    .then((results) => {
+      console.log('SUCCESS deleting recipe');
+      res.send(results);
+    }).catch((err) => {
+      console.error('ERROR deleting recipe', err);
+      res.status(404).end();
+    });
 });
 
 app.post('/api/recipelist', (req, res) => {
+  console.log('search', req.body)
   extCalls.getRecipesByIngredients(req.body).then((results) => {
+    console.log('SUCCESS getting recipeList from Spoonacular');
     res.send(results);
-  })
+  }).catch((err) => {
+    console.log('ERROR getting recipeList from Spoonacular', err);
+    res.status(404).end();
+  });
+  // const testRecipes = require('./testRecipes.json');
+  // res.send(testRecipes);
 });
 
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
-  dbHelpers.selectUser({email: email}).then(results => {
+  dbHelpers.selectUser({ email: email }).then(results => {
     if (!results.length) {
       res.end('Wrong email or password');
     } else {
       let user = results[0];
       bcrypt.compare(password, user.password).then(doesMatch => {
         if (doesMatch) {
-          res.send({ email: user.email, name: user.name});
+          res.send({ email: user.email, name: user.name });
         } else {
           res.end('Wrong email or password');
         }
@@ -149,7 +217,7 @@ app.post('/api/signup', (req, res) => {
       console.log('Error in hashing user password', err);
       res.status(404).end();
     }
-    dbHelpers.insertUser({email: email, password: hash, name: name}).then(() =>{
+    dbHelpers.insertUser({ email: email, password: hash, name: name }).then(() => {
       res.end('User saved!');
     }).catch((err) => {
       console.log('Error in saving new user to the database', err);
@@ -218,6 +286,9 @@ const combineIngredients = (ingredients, oldIngredients) => {
   });
   return results;
 };
+
+console.log(combineIngredients([{ingredient: 'apple', quantity: 2, unit: 'oz'}], 
+  [{ingredient: 'apple', quantity: 3, unit: 'lb'}]));
 //Listener====================================================
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);
