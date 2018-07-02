@@ -89,6 +89,14 @@ app.post('/api/combine', (req, res) => {
   res.send(combineIngredients(ingredients, oldIngredients));
 });
 
+app.post('/api/compare', (req, res) => {
+  const { recipe, ingredients } = req.body;
+  recipe.forEach(ingredient => {
+    ingredient.quantity *= -1;
+  });
+  res.send(combineIngredients(recipe, ingredients));
+});
+
 app.post('/api/parse', (req, res) => {
   const { ingredients } = req.body;
   res.send(parseIngredients(ingredients));
@@ -161,7 +169,7 @@ const units = {
   gallon: 'gal',
   ounce: 'oz',
   pound: 'lb',
-  liter: 'l',
+  liter: 'l'
 };
 
 const unitsList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'oz', 'lb', 'l'];
