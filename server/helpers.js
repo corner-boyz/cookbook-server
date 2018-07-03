@@ -62,10 +62,24 @@ const parseIngredients = (ingredients) => {
     return results;
   };
 
+  // Takes in two arrays of objects with quantity, unit, and ingredient properties
+  const combineIngredientsKeepBoth = (ingredients, oldIngredients) => {
+    let combinedIngredients = combineIngredients(ingredients, oldIngredients);
+    let filteredOldIngredients = oldIngredients.filter((oldIngredient) => {
+      for (let combinedIngredient of combinedIngredients) {
+        if (oldIngredient.ingredient === combinedIngredient.ingredient) {
+          return false;
+        }
+      }
+      return true
+    })
+    return combinedIngredients.concat(filteredOldIngredients);
+  };
   //====================================================
 module.exports = {
   parseIngredients,
   combineIngredients,
+  combineIngredientsKeepBoth,
   convert,
   combine,
   pluralize
