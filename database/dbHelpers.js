@@ -1,4 +1,6 @@
 const db = require('./database').knex;
+
+const helpers = require('../server/helpers');
 //====================================================
 //Creates tables if they don't exist yet
 const createTables = () => {
@@ -65,69 +67,59 @@ createTables().then((results) => {
 //====================================================
 // Takes in object with email
 const selectUser = ({ email }) => {
+  email = email.toLowerCase();
   return db.select('email', 'name', 'password').from('users').where('email', email);
 };
 
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
+  email = email.toLowerCase();
   return db.select('*').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
 const selectRecipe = ({ email, recipeId }) => {
-  return db.select('recipeid').from('usersrecipes').where('recipeid', recipeId);
+  email = email.toLowerCase();
+  return db.select('recipeid').from('usersrecipes').where({email: email, recipeid: recipeId});
 };
 //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({ email, password, name }) => {
+  email = email.toLowerCase();
   return db('users').insert({ email: email, password: password, name: name });
 };
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
+const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
+  email = email.toLowerCase();
+  if (!shouldReplace) {
+    ingredients = helpers.combineIngredients(ingredients, oldIngredients);
+  }
   let params = [];
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ ingredient, quantity, unit, ispurchased }) => {
       params.push({ email: email, ingredient: ingredient, quantity: quantity, unit: unit, ispurchased: ispurchased });
-    })
+    });
   } else {
     params.push({ email: email, ingredient: ingredients.ingredient, quantity: ingredients.quantity, unit: ingredients.unit });
   }
   
   let query = '';
   if (table === 'ingredients') {
-    if (shouldReplace) {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit) 
-        VALUES(:email, :ingredient, :quantity, :unit) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = :quantity, unit = :unit;`;
-    } else {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit) 
-        VALUES(:email, :ingredient, :quantity, :unit) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = ${table}.quantity + :quantity, unit = :unit;`;
-    }
+    query = `INSERT INTO 
+      ${table} (email, ingredient, quantity, unit) 
+      VALUES(:email, :ingredient, :quantity, :unit) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit;`;
   } else if (table === 'grocerylist') {
-    if (shouldReplace) {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit, ispurchased) 
-        VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
-    } else {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit) 
-        VALUES(:email, :ingredient, :quantity, :unit) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = ${table}.quantity + :quantity, unit = :unit, ispurchased = :ispurchased;`;
-    }
+    query = `INSERT INTO 
+      ${table} (email, ingredient, quantity, unit, ispurchased) 
+      VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
   }
 
   let promises = [];
@@ -138,6 +130,7 @@ const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
 };
 
 const groceryListIntoIngredients = (params) => {
+  params.email =  params.email.toLowerCase();
   const query = `INSERT INTO ingredients (email, ingredient, quantity, unit)
       SELECT email, ingredient, quantity, unit
         FROM grocerylist
@@ -159,6 +152,7 @@ const insertRecipe = (recipe) => {
 };
 
 const insertUsersRecipe = (recipe) => {
+  recipe.email = recipe.email.toLowerCase();
   const query = `INSERT INTO 
       usersRecipes (email, recipeId) 
       SELECT :email, :id
@@ -188,25 +182,28 @@ const saveRecipe = (recipe) => {
 }
 //====================================================
 const deleteRecipe = (params) => {
+  params.email = params.email.toLowerCase();
   const query = `DELETE FROM usersrecipes
     WHERE email = :email AND recipeid = :id`;
   return db.raw(query, params);
 }
 
 const deleteIngredients = ({ email, table }) => {
+  email = email.toLowerCase();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND quantity = 0`;
   return db.raw(query, { email });
 }
 
 const deleteGroceries = ({ email, table }) => {
+  email = email.toLowerCase();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND (quantity = 0 OR ispurchased = TRUE)`;
   return db.raw(query, { email });
 }
 
 const fetchUserRecipes = ({ email }) => {
-  // console.log('DB: ', email);
+  email = email.toLowerCase();
   return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where('email', email)
 }
 //====================================================
