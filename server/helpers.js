@@ -64,8 +64,9 @@ const parseIngredients = (ingredients) => {
 
   // Takes in two arrays of objects with quantity, unit, and ingredient properties
   const combineIngredientsKeepBoth = (ingredients, oldIngredients) => {
+    let combinedIngredients
     try {
-      let combinedIngredients = combineIngredients(ingredients, oldIngredients);
+      combinedIngredients = combineIngredients(ingredients, oldIngredients);
     } catch(err) {
       console.error('ERROR combining');
       throw err;
@@ -80,7 +81,12 @@ const parseIngredients = (ingredients) => {
         return true
       }
     })
-    return combinedIngredients.concat(filteredOldIngredients);
+    try {
+      return combinedIngredients.concat(filteredOldIngredients);
+    } catch(err) {
+      console.error('CONCAT', err);
+      throw err;
+    }
   };
   //====================================================
 module.exports = {
