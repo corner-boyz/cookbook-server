@@ -67,27 +67,32 @@ createTables().then((results) => {
 //====================================================
 // Takes in object with email
 const selectUser = ({ email }) => {
+  email = email.toLowerCase();
   return db.select('email', 'name', 'password').from('users').where('email', email);
 };
 
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
+  email = email.toLowerCase();
   return db.select('*').from(table).where('email', email).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
 const selectRecipe = ({ email, recipeId }) => {
-  return db.select('recipeid').from('usersrecipes').where('recipeid', recipeId);
+  email = email.toLowerCase();
+  return db.select('recipeid').from('usersrecipes').where({email: email, recipeid: recipeId});
 };
 //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({ email, password, name }) => {
+  email = email.toLowerCase();
   return db('users').insert({ email: email, password: password, name: name });
 };
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
 const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
+  email = email.toLowerCase();
   if (!shouldReplace) {
     ingredients = helpers.combineIngredients(ingredients, oldIngredients);
   }
@@ -125,6 +130,7 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
 };
 
 const groceryListIntoIngredients = (params) => {
+  params.email =  params.email.toLowerCase();
   const query = `INSERT INTO ingredients (email, ingredient, quantity, unit)
       SELECT email, ingredient, quantity, unit
         FROM grocerylist
@@ -146,6 +152,7 @@ const insertRecipe = (recipe) => {
 };
 
 const insertUsersRecipe = (recipe) => {
+  recipe.email = recipe.email.toLowerCase();
   const query = `INSERT INTO 
       usersRecipes (email, recipeId) 
       SELECT :email, :id
@@ -175,25 +182,28 @@ const saveRecipe = (recipe) => {
 }
 //====================================================
 const deleteRecipe = (params) => {
+  params.email = params.email.toLowerCase();
   const query = `DELETE FROM usersrecipes
     WHERE email = :email AND recipeid = :id`;
   return db.raw(query, params);
 }
 
 const deleteIngredients = ({ email, table }) => {
+  email = email.toLowerCase();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND quantity = 0`;
   return db.raw(query, { email });
 }
 
 const deleteGroceries = ({ email, table }) => {
+  email = email.toLowerCase();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND (quantity = 0 OR ispurchased = TRUE)`;
   return db.raw(query, { email });
 }
 
 const fetchUserRecipes = ({ email }) => {
-  // console.log('DB: ', email);
+  email = email.toLowerCase();
   return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where('email', email)
 }
 //====================================================
