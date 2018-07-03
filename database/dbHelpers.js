@@ -1,4 +1,6 @@
 const db = require('./database').knex;
+
+const helpers = require('../server/helpers');
 //====================================================
 //Creates tables if they don't exist yet
 const createTables = () => {
@@ -85,49 +87,34 @@ const insertUser = ({ email, password, name }) => {
 
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
-const insertIngredients = ({ email, ingredients, shouldReplace, table }) => {
+const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
+  if (!shouldReplace) {
+    ingredients = helpers.combineIngredients(ingredients, oldIngredients);
+  }
   let params = [];
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ ingredient, quantity, unit, ispurchased }) => {
       params.push({ email: email, ingredient: ingredient, quantity: quantity, unit: unit, ispurchased: ispurchased });
-    })
+    });
   } else {
     params.push({ email: email, ingredient: ingredients.ingredient, quantity: ingredients.quantity, unit: ingredients.unit });
   }
   
   let query = '';
   if (table === 'ingredients') {
-    if (shouldReplace) {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit) 
-        VALUES(:email, :ingredient, :quantity, :unit) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = :quantity, unit = :unit;`;
-    } else {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit) 
-        VALUES(:email, :ingredient, :quantity, :unit) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = ${table}.quantity + :quantity, unit = :unit;`;
-    }
+    query = `INSERT INTO 
+      ${table} (email, ingredient, quantity, unit) 
+      VALUES(:email, :ingredient, :quantity, :unit) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit;`;
   } else if (table === 'grocerylist') {
-    if (shouldReplace) {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit, ispurchased) 
-        VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
-    } else {
-      query = `INSERT INTO 
-        ${table} (email, ingredient, quantity, unit) 
-        VALUES(:email, :ingredient, :quantity, :unit) 
-        ON CONFLICT(email, ingredient) 
-        DO UPDATE
-        SET quantity = ${table}.quantity + :quantity, unit = :unit, ispurchased = :ispurchased;`;
-    }
+    query = `INSERT INTO 
+      ${table} (email, ingredient, quantity, unit, ispurchased) 
+      VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
   }
 
   let promises = [];
