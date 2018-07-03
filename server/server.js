@@ -167,6 +167,14 @@ app.post('/api/combine', (req, res) => {
   res.send(helpers.combineIngredients(ingredients, oldIngredients));
 });
 
+app.post('/api/compare', (req, res) => {
+  const { recipe, ingredients } = req.body;
+  recipe.forEach(ingredient => {
+    ingredient.quantity *= -1;
+  });
+  res.send(helpers.combineIngredients(recipe, ingredients));
+});
+
 app.post('/api/parse', (req, res) => {
   const { ingredients } = req.body;
   res.send(helpers.parseIngredients(ingredients));
