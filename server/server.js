@@ -110,7 +110,6 @@ app.post('/api/ingredients', (req, res) => {
 
 app.post('/api/grocerylist', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
-  // console.log('PURCHASE', ingredients[0].ispurchased)
   const table = 'grocerylist';
   ingredients.forEach(object => {
     object.ingredient = helpers.pluralize.singular(object.ingredient);
@@ -123,7 +122,7 @@ app.post('/api/grocerylist', (req, res) => {
         return dbHelpers.deleteGroceries({ email: email, table: table });
       })
       .then((results) => {
-        console.log('SUCCESS deleting groceries with 0 quantities');
+        console.log('SUCCESS deleting purchased groceries or with 0 quantities');
         res.send(results);
       })
       .catch((err) => {
@@ -133,6 +132,25 @@ app.post('/api/grocerylist', (req, res) => {
   });
 });
 
+app.post('/api/grocerylistcheckboxes', (req, res) => {
+  const { email, ingredients, shouldReplace} = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    object.ingredient = helpers.pluralize.singular(object.ingredient);
+  });
+  
+  dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
+    Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+      .then((results) => {
+        console.log('SUCCESS inserting into ingredients from groceryList');
+        res.send(results);
+      })
+      .catch((err) => {
+        console.error('ERROR inserting into groceryList', err);
+        res.status(404).end();
+      });
+  });
+});
 
 app.post('/api/grocerylistintopantry', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
