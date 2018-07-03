@@ -92,44 +92,74 @@ app.post('/api/ingredients', (req, res) => {
   ingredients.forEach(object => {
     object.ingredient = helpers.pluralize.singular(object.ingredient);
   });
-  Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-    .then((results) => {
-      console.log('SUCCESS inserting ingredients');
-      dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
-        console.log('SUCCESS deleting ingredients with 0 quantities');
-      }).then((results) => {
-        res.send(results);
+  dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
+    Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+      .then((results) => {
+        console.log('SUCCESS inserting ingredients');
+        dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
+          console.log('SUCCESS deleting ingredients with 0 quantities');
+        }).then((results) => {
+          res.send(results);
+        });
+      }).catch((err) => {
+        console.error('ERROR inserting ingredients', err);
+        res.status(404).end();
       });
-    }).catch((err) => {
-      console.error('ERROR inserting ingredients', err);
-      res.status(404).end();
-    });
+  });
 });
 
-app.post('/api/grocerylist', async (req, res) => {
+app.post('/api/grocerylist', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   // console.log('PURCHASE', ingredients[0].ispurchased)
   const table = 'grocerylist';
   ingredients.forEach(object => {
     object.ingredient = helpers.pluralize.singular(object.ingredient);
   });
-  await Promise.all(dbHelpers.insertIngredients({ email: email, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-    .then((results) => {
-      console.log('SUCCESS inserting into groceryList', results);
-      return dbHelpers.groceryListIntoIngredients({email: email});
-    })
-    .then((results) => {
-      console.log('SUCCESS inserting into ingredients from groceryList');
-      return dbHelpers.deleteGroceries({ email: email, table: table });
-    })
-    .then((results) => {
-      console.log('SUCCESS deleting groceries with 0 quantities');
-      res.send(results);
-    })
-    .catch((err) => {
-      console.error('ERROR inserting into groceryList', err);
-      res.status(404).end();
-    });
+  
+  dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
+    Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+      .then((results) => {
+        console.log('SUCCESS inserting into groceryList', results);
+        return dbHelpers.groceryListIntoIngredients({email: email, oldIngredients: oldIngredients});
+      })
+      .then((results) => {
+        console.log('SUCCESS inserting into ingredients from groceryList');
+        return dbHelpers.deleteGroceries({ email: email, table: table });
+      })
+      .then((results) => {
+        console.log('SUCCESS deleting groceries with 0 quantities');
+        res.send(results);
+      })
+      .catch((err) => {
+        console.error('ERROR inserting into groceryList', err);
+        res.status(404).end();
+      });
+  });
+  // To be continue
+  // dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
+  //   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
+  //     Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+  //       .then((results) => {
+  //         console.log('SUCCESS inserting into groceryList', results);
+  //         return dbHelpers.selectIngredients({ email: email, table: table});
+  //       })
+  //       .then((groceryIngredients) => {
+  //         return dbHelpers.groceryListIntoIngredients({email: email, groceryIngredients, pantryIngredients: pantryIngredients});
+  //       })
+  //       .then((results) => {
+  //         console.log('SUCCESS inserting into ingredients from groceryList');
+  //         return dbHelpers.deleteGroceries({ email: email, table: table });
+  //       })
+  //       .then((results) => {
+  //         console.log('SUCCESS deleting groceries with 0 quantities');
+  //         res.send(results);
+  //       })
+  //       .catch((err) => {
+  //         console.error('ERROR inserting into groceryList', err);
+  //         res.status(404).end();
+  //       });
+  //   });
+  // });
 });
 
 app.post('/api/combine', (req, res) => {
