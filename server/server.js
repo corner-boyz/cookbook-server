@@ -108,7 +108,7 @@ app.post('/api/ingredients', (req, res) => {
   });
 });
 
-app.patch('/api/grocerylist', (req, res) => {
+app.post('/api/grocerylist', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   // console.log('PURCHASE', ingredients[0].ispurchased)
   const table = 'grocerylist';
@@ -134,7 +134,7 @@ app.patch('/api/grocerylist', (req, res) => {
 });
 
 
-app.post('/api/grocerylist', (req, res) => {
+app.post('/api/grocerylistintopantry', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
@@ -146,7 +146,7 @@ app.post('/api/grocerylist', (req, res) => {
       Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
         .then((results) => {
           console.log('SUCCESS inserting into groceryList', results);
-          return dbHelpers.selectIngredientsByKeeping({ email: email, table: table});
+          return dbHelpers.selectIngredients({ email: email, table: table});
         })
         .then((groceryIngredients) => {
           return Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: groceryIngredients, ingredients: pantryIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
