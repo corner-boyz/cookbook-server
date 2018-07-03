@@ -94,7 +94,7 @@ const insertUser = ({ email, password, name }) => {
 const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
   email = email.toLowerCase();
   if (!shouldReplace) {
-    ingredients = helpers.combineIngredients(ingredients, oldIngredients);
+    ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
   }
   let params = [];
   if (Array.isArray(ingredients)) {
@@ -129,8 +129,55 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
   return promises;
 };
 
-const groceryListIntoIngredients = (params) => {
-  params.email =  params.email.toLowerCase();
+const insertIngredientsByKeeping = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
+  email = email.toLowerCase();
+  if (!shouldReplace) {
+    ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
+  }
+  let params = [];
+  if (Array.isArray(ingredients)) {
+    ingredients.forEach(({ ingredient, quantity, unit, ispurchased }) => {
+      params.push({ email: email, ingredient: ingredient, quantity: quantity, unit: unit, ispurchased: ispurchased });
+    });
+  } else {
+    params.push({ email: email, ingredient: ingredients.ingredient, quantity: ingredients.quantity, unit: ingredients.unit });
+  }
+  
+  let query = '';
+  if (table === 'ingredients') {
+    query = `INSERT INTO 
+      ${table} (email, ingredient, quantity, unit) 
+      VALUES(:email, :ingredient, :quantity, :unit) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit;`;
+  } else if (table === 'grocerylist') {
+    query = `INSERT INTO 
+      ${table} (email, ingredient, quantity, unit, ispurchased) 
+      VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
+      ON CONFLICT(email, ingredient) 
+      DO UPDATE
+      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+  }
+
+  let promises = [];
+  params.forEach((param) => {
+    promises.push(db.raw(query, param));
+  });
+  return promises;
+};
+
+const groceryListIntoIngredients = ({email, groceryIngredients, pantryIngredients}) => {
+  email =  email.toLowerCase();
+  combinedIngredients = helpers.combineIngredientsKeepBoth(groceryIngredients, pantryIngredients)
+  console.log('COMBINE', combinedIngredients);
+  // const query = `INSERT INTO ingredients (email, ingredient, quantity, unit)
+  //     SELECT email, ingredient, quantity, unit
+  //       FROM grocerylist
+  //       WHERE email = :email 
+  //       AND ispurchased = TRUE
+  //     ON CONFLICT(email, ingredient)
+  //       DO UPDATE SET quantity = ingredients.quantity + excluded.quantity;`;
   const query = `INSERT INTO ingredients (email, ingredient, quantity, unit)
       SELECT email, ingredient, quantity, unit
         FROM grocerylist
@@ -138,7 +185,7 @@ const groceryListIntoIngredients = (params) => {
         AND ispurchased = TRUE
       ON CONFLICT(email, ingredient)
         DO UPDATE SET quantity = ingredients.quantity + excluded.quantity;`;
-  return db.raw(query, params);
+  return db.raw(query, {email: email, combinedIngredients: combinedIngredients});
 }
 
 const insertRecipe = (recipe) => {
@@ -212,6 +259,7 @@ module.exports = {
   selectIngredients,
   insertUser,
   insertIngredients,
+  insertIngredientsByKeeping,
   saveRecipe,
   deleteRecipe,
   deleteGroceries,
