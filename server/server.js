@@ -116,19 +116,24 @@ app.post('/api/grocerylist', (req, res) => {
   });
   
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
-    Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-      .then((results) => {
-        console.log('SUCCESS inserting into ingredients from groceryList');
-        return dbHelpers.deleteGroceries({ email: email, table: table });
-      })
-      .then((results) => {
-        console.log('SUCCESS deleting purchased groceries or with 0 quantities');
-        res.send(results);
-      })
-      .catch((err) => {
-        console.error('ERROR inserting into groceryList', err);
-        res.status(404).end();
-      });
+    try {
+      Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+        .then((results) => {
+          console.log('SUCCESS inserting into ingredients from groceryList');
+          return dbHelpers.deleteGroceries({ email: email, table: table });
+        })
+        .then((results) => {
+          console.log('SUCCESS deleting purchased groceries or with 0 quantities');
+          res.send(results);
+        })
+        .catch((err) => {
+          console.error('ERROR inserting into groceryList', err);
+          res.status(404).end();
+        });
+    } catch(err) {
+      console.log('ERROR converting units');
+      res.status(406).send('hello');
+    }
   });
 });
 

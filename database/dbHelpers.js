@@ -94,7 +94,12 @@ const insertUser = ({ email, password, name }) => {
 const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
   email = email.toLowerCase();
   if (!shouldReplace) {
-    ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
+    try {
+      ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
+    } catch(err) {
+      console.error('ERROR combining in insert');
+      throw err;
+    }
   }
   let params = [];
   if (Array.isArray(ingredients)) {
