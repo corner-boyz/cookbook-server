@@ -93,18 +93,23 @@ app.post('/api/ingredients', (req, res) => {
     object.ingredient = helpers.pluralize.singular(object.ingredient);
   });
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
-    Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-      .then((results) => {
-        console.log('SUCCESS inserting ingredients');
-        dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
-          console.log('SUCCESS deleting ingredients with 0 quantities');
-        }).then((results) => {
-          res.send(results);
+    try {
+      Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+        .then((results) => {
+          console.log('SUCCESS inserting ingredients');
+          dbHelpers.deleteIngredients({ email: email, table: table }).then((results) => {
+            console.log('SUCCESS deleting ingredients with 0 quantities');
+          }).then((results) => {
+            res.send(results);
+          });
+        }).catch((err) => {
+          console.error('ERROR inserting ingredients', err);
+          res.status(404).end();
         });
-      }).catch((err) => {
-        console.error('ERROR inserting ingredients', err);
-        res.status(404).end();
-      });
+    } catch(err) {
+      console.error('ERROR converting units');
+      res.status(406).send();
+    }
   });
 });
 
@@ -131,8 +136,8 @@ app.post('/api/grocerylist', (req, res) => {
           res.status(404).end();
         });
     } catch(err) {
-      console.log('ERROR converting units');
-      res.status(406).send('hello');
+      console.error('ERROR converting units');
+      res.status(406).send();
     }
   });
 });
