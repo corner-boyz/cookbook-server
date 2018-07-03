@@ -108,7 +108,7 @@ app.post('/api/ingredients', (req, res) => {
   });
 });
 
-app.post('/api/grocerylist', (req, res) => {
+app.patch('/api/grocerylist', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   // console.log('PURCHASE', ingredients[0].ispurchased)
   const table = 'grocerylist';
@@ -118,10 +118,6 @@ app.post('/api/grocerylist', (req, res) => {
   
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
     Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-      .then((results) => {
-        console.log('SUCCESS inserting into groceryList', results);
-        return dbHelpers.groceryListIntoIngredients({email: email, oldIngredients: oldIngredients});
-      })
       .then((results) => {
         console.log('SUCCESS inserting into ingredients from groceryList');
         return dbHelpers.deleteGroceries({ email: email, table: table });
@@ -135,31 +131,40 @@ app.post('/api/grocerylist', (req, res) => {
         res.status(404).end();
       });
   });
-  // To be continue
-  // dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
-  //   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
-  //     Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
-  //       .then((results) => {
-  //         console.log('SUCCESS inserting into groceryList', results);
-  //         return dbHelpers.selectIngredients({ email: email, table: table});
-  //       })
-  //       .then((groceryIngredients) => {
-  //         return dbHelpers.groceryListIntoIngredients({email: email, groceryIngredients, pantryIngredients: pantryIngredients});
-  //       })
-  //       .then((results) => {
-  //         console.log('SUCCESS inserting into ingredients from groceryList');
-  //         return dbHelpers.deleteGroceries({ email: email, table: table });
-  //       })
-  //       .then((results) => {
-  //         console.log('SUCCESS deleting groceries with 0 quantities');
-  //         res.send(results);
-  //       })
-  //       .catch((err) => {
-  //         console.error('ERROR inserting into groceryList', err);
-  //         res.status(404).end();
-  //       });
-  //   });
-  // });
+});
+
+
+app.post('/api/grocerylist', (req, res) => {
+  const { email, ingredients, shouldReplace} = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    object.ingredient = helpers.pluralize.singular(object.ingredient);
+  });
+  
+  dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
+    dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
+      Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+        .then((results) => {
+          console.log('SUCCESS inserting into groceryList', results);
+          return dbHelpers.selectIngredientsByKeeping({ email: email, table: table});
+        })
+        .then((groceryIngredients) => {
+          return Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: groceryIngredients, ingredients: pantryIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
+        })
+        .then((results) => {
+          console.log('SUCCESS inserting into ingredients from groceryList');
+          return dbHelpers.deleteGroceries({ email: email, table: table });
+        })
+        .then((results) => {
+          console.log('SUCCESS deleting groceries with 0 quantities');
+          res.send(results);
+        })
+        .catch((err) => {
+          console.error('ERROR inserting into groceryList', err);
+          res.status(404).end();
+        });
+    });
+  });
 });
 
 app.post('/api/combine', (req, res) => {
@@ -247,20 +252,6 @@ app.post('/api/signup', (req, res) => {
     })
   });
 });
-
-//Testing====================================================
-const tester = () => {
-  ingredients = dbHelpers.selectIngredients({email: 'theohzonelayer@gmail.com', table: 'ingredients'})
-  .then((results) => {
-    oldIngredients = results;
-    ingredients = [
-      {ingredient: 'sugar', quantity: 100, unit: 'oz'},
-      {ingredient: 'salt', quantity: 70, unit: 'oz'},
-    ];
-    console.log('COMBINE', helpers.combineIngredients(ingredients, oldIngredients));
-  });
-}
-// tester();
 //Listener====================================================
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${process.env.PORT || 3000}!`);

@@ -66,12 +66,14 @@ const parseIngredients = (ingredients) => {
   const combineIngredientsKeepBoth = (ingredients, oldIngredients) => {
     let combinedIngredients = combineIngredients(ingredients, oldIngredients);
     let filteredOldIngredients = oldIngredients.filter((oldIngredient) => {
-      for (let combinedIngredient of combinedIngredients) {
-        if (oldIngredient.ingredient === combinedIngredient.ingredient) {
-          return false;
+      if (oldIngredient.ispurchased) {
+        for (let combinedIngredient of combinedIngredients) {
+          if (oldIngredient.ingredient === combinedIngredient.ingredient) {
+            return false;
+          }
         }
+        return true
       }
-      return true
     })
     return combinedIngredients.concat(filteredOldIngredients);
   };
