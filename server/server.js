@@ -30,13 +30,23 @@ app.use(allowCrossDomain);
 app.get('/api/ingredients/:email', (req, res) => {
   const { email } = req.params;
   const table = 'ingredients';
-  dbHelpers.selectIngredients({ email: email, table: table }).then((results) => {
+  dbHelpers.selectIngredients({ email: email, table: table }).then((ingredients) => {
     console.log('SUCCESS getting ingredients from DB');
-    res.send(results);
+    let images = [];
+    ingredients.forEach((ingredient) => {
+      images.push(extCalls.getImageByString(ingredient.ingredient));
+    });
+    Promise.all(images).then((results) => {
+      for (let i = 0; i < ingredients.length; i++) {
+        ingredients[i].image = results[i]; 
+      }
+      console.log(ingredients)
+      res.send(ingredients);
+    });
   }).catch((err) => {
     console.error('ERROR getting ingredients from DB', err);
     res.status(404).end();
-  })
+  });
 });
 
 app.get('/api/grocerylist/:email', (req, res) => {
