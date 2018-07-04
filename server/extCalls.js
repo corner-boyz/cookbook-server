@@ -1,5 +1,12 @@
 const axios = require('axios');
 
+const getImageByString = (ingredient) => {
+  const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&image_type=vector&category=food&per_page=3&safesearch=true&q=${ingredient}`;
+  return axios.get(url).then((results) => {
+    return results.data.hits[0].previewURL;
+  });
+}
+
 const getRecipesByIngredients = (ingredients) => {
   // Turn passed in ingredients into query string
   const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=20&limitLicense=false&ranking=2&fillIngredients=true&ingredients=';
@@ -54,5 +61,6 @@ const getRecipeById = (id) => {
 
 module.exports = {
   getRecipesByIngredients,
-  getRecipeById
+  getRecipeById,
+  getImageByString
 }
