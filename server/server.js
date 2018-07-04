@@ -61,6 +61,7 @@ app.get('/api/grocerylist/:email', (req, res) => {
       for (let i = 0; i < ingredients.length; i++) {
         ingredients[i].imageurl = results[i]; 
       }
+      // console.log('PROMISE STUFF', ingredients);
       res.send(ingredients);
     });
   }).catch((err) => {

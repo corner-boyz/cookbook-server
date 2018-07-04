@@ -3,7 +3,15 @@ const axios = require('axios');
 const getImageByString = (ingredient) => {
   const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&image_type=vector&category=food&per_page=3&safesearch=true&q=${ingredient}`;
   return axios.get(url).then((results) => {
-    return results.data.hits[0].previewURL;
+    // console.log('HEADERS', results.headers);
+    if (results.data.hits.length) {
+      return results.data.hits[0].previewURL;
+    } else {
+      return undefined;
+    }
+  }).catch((err) => {
+    console.error('Pixabay limiting use');
+    return undefined;
   });
 }
 
