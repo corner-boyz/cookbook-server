@@ -174,14 +174,14 @@ app.post('/api/grocerylistintopantry', (req, res) => {
       Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
         .then((results) => {
           console.log('SUCCESS inserting into groceryList', results);
-          return dbHelpers.selectIngredients({ email: email, table: table});
+          return dbHelpers.selectPurchasedGroceryList({ email: email });
         })
         .then((groceryIngredients) => {
           return Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: groceryIngredients, ingredients: pantryIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
         })
         .then((results) => {
           console.log('SUCCESS inserting into ingredients from groceryList');
-          return dbHelpers.deleteGroceries({ email: email, table: table });
+          return dbHelpers.deletePurchasedGroceries({ email: email, table: table });
         })
         .then((results) => {
           console.log('SUCCESS deleting groceries with 0 quantities');
@@ -189,7 +189,7 @@ app.post('/api/grocerylistintopantry', (req, res) => {
         })
         .catch((err) => {
           console.error('ERROR inserting into groceryList', err);
-          res.status(404).end();
+          res.status(406).end();
         });
     });
   });
