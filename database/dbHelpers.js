@@ -77,6 +77,11 @@ const selectIngredients = ({ email, table }) => {
   return db.select('*').from(table).where('email', email).orderBy('ingredient');
 };
 
+const selectPurchasedGroceryList = ({ email }) => {
+  email = email.toLowerCase();
+  return db.select('*').from('grocerylist').where({email: email, ispurchased: true}).orderBy('ingredient');
+};
+
 // Takes in object with email and recipeId
 const selectRecipe = ({ email, recipeId }) => {
   email = email.toLowerCase();
@@ -94,7 +99,12 @@ const insertUser = ({ email, password, name }) => {
 const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
   email = email.toLowerCase();
   if (!shouldReplace) {
-    ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
+    try {
+      ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
+    } catch(err) {
+      console.error('ERROR combining in insert');
+      throw err;
+    }
   }
   let params = [];
   if (Array.isArray(ingredients)) {
@@ -245,6 +255,13 @@ const deleteIngredients = ({ email, table }) => {
 const deleteGroceries = ({ email, table }) => {
   email = email.toLowerCase();
   const query = `DELETE FROM ${table}
+    WHERE email = :email AND quantity = 0`;
+  return db.raw(query, { email });
+}
+
+const deletePurchasedGroceries = ({ email, table }) => {
+  email = email.toLowerCase();
+  const query = `DELETE FROM ${table}
     WHERE email = :email AND (quantity = 0 OR ispurchased = TRUE)`;
   return db.raw(query, { email });
 }
@@ -257,12 +274,14 @@ const fetchUserRecipes = ({ email }) => {
 module.exports = {
   selectUser,
   selectIngredients,
+  selectPurchasedGroceryList,
   insertUser,
   insertIngredients,
   insertIngredientsByKeeping,
   saveRecipe,
   deleteRecipe,
   deleteGroceries,
+  deletePurchasedGroceries,
   selectRecipe,
   deleteIngredients,
   fetchUserRecipes,
