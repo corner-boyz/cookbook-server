@@ -36,18 +36,33 @@ const parseIngredients = (ingredients) => {
   return parsed;
 }
 
+const formatIngredients = (ingredientsObj) => {
+  ingredients = [];
+  ingredientsObj.forEach((ingredient) => {
+    ingredients.push(`${ingredient.amount} ${ingredient.unit} ${ingredient.name}`);
+  });
+  return parseIngredients(ingredients);
+}
+
 const compareIngredients = (recipe, ingredients) => {
   recipe.forEach(ingredient => {
     ingredient.quantity *= -1;
   });
   return combineIngredients(recipe, ingredients);
 }
+
+const compareIngredientsKeepBoth = (recipe, ingredients) => {
+  ingredients.forEach(ingredient => {
+    ingredient.quantity *= -1;
+  });
+  return combineIngredientsKeepBoth(recipe, ingredients);
+}
   // Takes in two arrays of objects with quantity, unit, and ingredient properties
 const combineIngredients = (ingredients, oldIngredients) => {
   // Converts the old ingredients array into an object
   let ingredientsObj = {};
   oldIngredients.forEach(ingredient => {
-    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit }
+    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit, imageurl: ingredient.imageurl }
   });
   // Compares elements from the new ingredients array to old ingredients and converts as necessary
   let results = [];
@@ -61,10 +76,10 @@ const combineIngredients = (ingredients, oldIngredients) => {
         throw (`Cannot convert ${newIngredient.unit} to ${old.unit} for ${newIngredient.ingredient}`);
       }
       newIngredient.unit = old.unit;
-      let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
+      let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient, imageurl: newIngredient.imageurl }]);
       results.push(combinedWithUnits[0]);
     } else if (old && !old.unit && !newIngredient.unit) {
-      let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: null, ingredient: newIngredient.ingredient }]);
+      let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: null, ingredient: newIngredient.ingredient, imageurl: newIngredient.imageurl }]);
       results.push(combinedWithoutUnits[0]);
     } else {
       results.push(newIngredient);
@@ -104,8 +119,10 @@ module.exports = {
   parseIngredients,
   compareIngredients,
   compareIngredients,
+  compareIngredientsKeepBoth,
   combineIngredients,
   combineIngredientsKeepBoth,
+  formatIngredients,
   convert,
   combine,
   pluralize
