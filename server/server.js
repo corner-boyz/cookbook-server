@@ -126,8 +126,8 @@ app.post('/api/ingredients', (req, res) => {
           res.status(404).end();
         });
     } catch(err) {
-      console.error('ERROR converting units');
-      res.status(406).send();
+      console.error('ERROR converting units', err);
+      res.status(406).end(err);
     }
   });
 });
@@ -155,8 +155,8 @@ app.post('/api/grocerylist', (req, res) => {
           res.status(404).end();
         });
     } catch(err) {
-      console.error('ERROR converting units');
-      res.status(406).send();
+      console.error('ERROR converting units', err);
+      res.status(406).end(err);
     }
   });
 });
@@ -207,8 +207,8 @@ app.post('/api/grocerylistintopantry', (req, res) => {
           res.send(results);
         })
         .catch((err) => {
-          console.error('ERROR inserting into groceryList', err);
-          res.status(406).end();
+          console.error('ERROR converting units', err);
+          res.status(406).end(err);
         });
     });
   });
