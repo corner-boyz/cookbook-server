@@ -227,12 +227,11 @@ app.post('/api/compare', (req, res) => {
 app.post('/api/comparetorecipe', (req, res) => {
   const { recipe, ingredients } = req.body;
   console.log('recipe', recipe)
-  console.log('fomatted', helpers.formatIngredients(recipe))
   const difference = helpers.compareIngredientsKeepBoth(helpers.formatIngredients(recipe), ingredients);
-  // const filtered = difference.filter((ingredient) => {
-  //   return ingredient.quantity > 0;
-  // })
-  res.send(difference);
+  const filtered = difference.filter((ingredient) => {
+    return ingredient.quantity > 0
+  })
+  res.send(filtered);
 });
 
 app.post('/api/parse', (req, res) => {
