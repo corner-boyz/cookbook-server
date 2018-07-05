@@ -230,7 +230,7 @@ app.post('/api/comparetorecipe', (req, res) => {
   const difference = helpers.compareIngredientsKeepBoth(helpers.formatIngredients(recipe), ingredients);
   const filtered = difference.filter((ingredient) => {
     return ingredient.quantity > 0
-  })
+  });
   res.send(filtered);
 });
 

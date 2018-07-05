@@ -10,12 +10,16 @@ const units = {
   pint: 'pnt',
   quart: 'qt',
   gallon: 'gal',
+  milliliter: 'ml',
+  liter: 'l',
+  kiloliter: 'kl',
   ounce: 'oz',
   pound: 'lb',
-  liter: 'l',
+  gram: 'g',
+  kilogram: 'kg'
 };
   
-const unitsList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'oz', 'lb', 'l'];
+const unitsList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'l', 'ml', 'kl', 'oz', 'lb', 'g', 'kg'];
   
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
@@ -29,6 +33,8 @@ const parseIngredients = (ingredients) => {
       // Convert to abbreviation
       if (units[obj.unit]) {
         obj.unit = units[obj.unit];
+      } else {
+        obj.unit = null;
       }
     }
     return obj;
