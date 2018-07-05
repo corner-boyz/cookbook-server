@@ -221,10 +221,8 @@ app.post('/api/combine', (req, res) => {
 
 app.post('/api/compare', (req, res) => {
   const { recipe, ingredients } = req.body;
-  recipe.forEach(ingredient => {
-    ingredient.quantity *= -1;
-  });
-  res.send(helpers.combineIngredients(recipe, ingredients));
+  console.log('ing', ingredients)
+  res.send(helpers.compareIngredients(recipe, ingredients));
 });
 
 app.post('/api/parse', (req, res) => {
@@ -259,7 +257,6 @@ app.patch('/api/saverecipe', (req, res) => {
 });
 
 app.post('/api/recipelist', (req, res) => {
-  console.log('search', req.body)
   extCalls.getRecipesByIngredients(req.body).then((results) => {
     console.log('SUCCESS getting recipeList from Spoonacular');
     res.send(results);
