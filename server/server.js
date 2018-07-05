@@ -196,7 +196,7 @@ app.post('/api/grocerylistintopantry', (req, res) => {
           return dbHelpers.selectPurchasedGroceryList({ email: email });
         })
         .then((groceryIngredients) => {
-          return Promise.all(dbHelpers.insertIngredients({ email: email, oldIngredients: groceryIngredients, ingredients: pantryIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
+          return Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: pantryIngredients, ingredients: groceryIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
         })
         .then((results) => {
           console.log('SUCCESS inserting into ingredients from groceryList');
