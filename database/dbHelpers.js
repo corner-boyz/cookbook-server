@@ -48,6 +48,7 @@ const createTables = () => {
     recipeId INT NOT NULL PRIMARY KEY,
     title TEXT,
     imageUrl TEXT,
+    sourceUrl TEXT,
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW());
   CREATE TABLE IF NOT EXISTS usersRecipes(
@@ -200,8 +201,8 @@ const groceryListIntoIngredients = ({email, groceryIngredients, pantryIngredient
 
 const insertRecipe = (recipe) => {
   const query = `INSERT INTO
-  recipes (recipeId, title, imageUrl)
-  SELECT :id, :title, :image
+  recipes (recipeId, title, imageUrl, sourceUrl)
+  SELECT :id, :title, :image, :sourceUrl
     WHERE NOT EXISTS (
       SELECT recipeId FROM recipes WHERE recipeId = :id
   );`

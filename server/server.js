@@ -241,8 +241,8 @@ app.post('/api/parse', (req, res) => {
 
 app.post('/api/saverecipe', (req, res) => {
   const { email, recipe } = req.body;
-  const { id, title, image } = recipe;
-  dbHelpers.saveRecipe({ email: email, id: id, title: title, image: image })
+  const { id, title, image, sourceUrl } = recipe;
+  dbHelpers.saveRecipe({ email: email, id: id, title: title, image: image, sourceUrl: sourceUrl })
     .then((results) => {
       console.log('SUCCESS saving recipe');
       res.send(results);
