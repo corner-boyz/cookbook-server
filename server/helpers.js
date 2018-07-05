@@ -48,7 +48,12 @@ const parseIngredients = (ingredients) => {
     ingredients.forEach(newIngredient => {
       let old = ingredientsObj[newIngredient.ingredient];
       if (old && unitsList.includes(old.unit) && unitsList.includes(newIngredient.unit)) {
-        newIngredient.quantity = convert(newIngredient.quantity).from(newIngredient.unit).to(old.unit);
+        try {
+          newIngredient.quantity = convert(newIngredient.quantity).from(newIngredient.unit).to(old.unit);
+        } catch(err) {
+          // console.error('NEW ONE', err);
+          throw (`Cannot convert ${newIngredient.unit} to ${old.unit} for ${newIngredient.ingredient}`);
+        }
         newIngredient.unit = old.unit;
         let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient }]);
         results.push(combinedWithUnits[0]);
