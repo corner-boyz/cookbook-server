@@ -98,9 +98,6 @@ const combineIngredients = (ingredients, oldIngredients) => {
   return results;
 };
 
-//Need to make a combineIngredients method that puts it in return even if
-//ingredient cannot be converted. Will probably need to make an array of
-//weight and volume measurements and check them and only run convert if includes
   // Takes in two arrays of objects with quantity, unit, and ingredient properties
 const combineIngredientsWithFailedConversion = (ingredients, oldIngredients) => {
   // Converts the old ingredients array into an object
@@ -112,9 +109,10 @@ const combineIngredientsWithFailedConversion = (ingredients, oldIngredients) => 
   let results = [];
   ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
-    if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
-      throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
-    }
+    // Don't think I need that any more
+    // if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
+    //   throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
+    // }
     if (old && ((unitsVolumeList.includes(old.unit) && unitsVolumeList.includes(newIngredient.unit)) || (unitsMassList.includes(old.unit) && unitsMassList.includes(newIngredient.unit)) || (!old.unit && !newIngredient.unit))) {
       if (old && unitsList.includes(old.unit) && unitsList.includes(newIngredient.unit)) {
         try {
