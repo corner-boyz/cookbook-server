@@ -18,8 +18,10 @@ const units = {
   gram: 'g',
   kilogram: 'kg'
 };
-  
-const unitsList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'l', 'ml', 'kl', 'oz', 'lb', 'g', 'kg'];
+
+const unitsVolumeList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'l', 'ml', 'kl']
+const unitsMassList = ['oz', 'lb', 'g', 'kg'];
+const unitsList = unitsVolumeList.concat(unitsMassList);
   
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
@@ -96,9 +98,13 @@ const combineIngredients = (ingredients, oldIngredients) => {
   return results;
 };
 
+//Need to make a combineIngredients method that puts it in return even if
+//ingredient cannot be converted. Will probably need to make an array of
+//weight and volume measurements and check them and only run convert if includes
+
   // Takes in two arrays of objects with quantity, unit, and ingredient properties
 const combineIngredientsKeepBoth = (ingredients, oldIngredients) => {
-  let combinedIngredients
+  let combinedIngredients;
   try {
     combinedIngredients = combineIngredients(ingredients, oldIngredients);
   } catch(err) {
