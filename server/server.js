@@ -306,13 +306,13 @@ app.post('/api/signup', (req, res) => {
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) {
       console.log('Error in hashing user password', err);
-      res.status(404).end();
+      res.status(406).end();
     }
     dbHelpers.insertUser({ email: email, password: hash, name: name }).then(() => {
       res.end('User saved!');
     }).catch((err) => {
       console.log('Error in saving new user to the database', err);
-      res.status(404).end();
+      res.status(406).end();
     })
   });
 });
