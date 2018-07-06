@@ -250,21 +250,21 @@ const deleteRecipe = (params) => {
 const deleteIngredients = ({ email, table }) => {
   email = email.toLowerCase();
   const query = `DELETE FROM ${table}
-    WHERE email = :email AND quantity = 0`;
+    WHERE email = :email AND quantity <= 0`;
   return db.raw(query, { email });
 }
 
 const deleteGroceries = ({ email, table }) => {
   email = email.toLowerCase();
   const query = `DELETE FROM ${table}
-    WHERE email = :email AND quantity = 0`;
+    WHERE email = :email AND quantity <= 0`;
   return db.raw(query, { email });
 }
 
 const deletePurchasedGroceries = ({ email, table }) => {
   email = email.toLowerCase();
   const query = `DELETE FROM ${table}
-    WHERE email = :email AND (quantity = 0 OR ispurchased = TRUE)`;
+    WHERE email = :email AND (quantity <= 0 OR ispurchased = TRUE)`;
   return db.raw(query, { email });
 }
 

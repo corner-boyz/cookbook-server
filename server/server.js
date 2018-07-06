@@ -251,6 +251,11 @@ app.post('/api/parse', (req, res) => {
   res.send(helpers.parseIngredients(ingredients));
 });
 
+app.post('/api/formatparse', (req, res) => {
+  const { ingredients } = req.body;
+  res.send(helpers.formatIngredients(ingredients));
+});
+
 app.post('/api/saverecipe', (req, res) => {
   const { email, recipe } = req.body;
   const { id, title, image, sourceUrl, isExtension = false } = recipe;
