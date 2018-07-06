@@ -22,7 +22,8 @@ const units = {
 const unitsVolumeList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'l', 'ml', 'kl']
 const unitsMassList = ['oz', 'lb', 'g', 'kg'];
 const unitsList = unitsVolumeList.concat(unitsMassList);
-  
+
+const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'ground', 'strip', 'strips', 'light', 'salted'];
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
   let parsed = ingredients.map(ingredient => {
@@ -30,6 +31,11 @@ const parseIngredients = (ingredients) => {
     let obj = parse(ingredient.toLowerCase());
     // Convert to singular
     obj.ingredient = pluralize.singular(obj.ingredient);
+    if (obj.ingredient.length > 1) {
+      obj.ingredient = obj.ingredient.split(' ').filter((word) => {
+        return !filteredOutWords.includes(word);
+      }).join(' ');
+    }
     if (obj.unit) {
       obj.unit = pluralize.singular(obj.unit);
       // Convert to abbreviation
