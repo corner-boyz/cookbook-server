@@ -74,11 +74,13 @@ const combineIngredients = (ingredients, oldIngredients) => {
   let results = [];
   ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
+    if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
+      throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
+    }
     if (old && unitsList.includes(old.unit) && unitsList.includes(newIngredient.unit)) {
       try {
         newIngredient.quantity = convert(newIngredient.quantity).from(newIngredient.unit).to(old.unit);
       } catch(err) {
-        // console.error('NEW ONE', err);
         throw (`Cannot convert ${newIngredient.unit} to ${old.unit} for ${newIngredient.ingredient}`);
       }
       newIngredient.unit = old.unit;
