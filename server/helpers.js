@@ -63,7 +63,7 @@ const compareIngredientsKeepBoth = (recipe, ingredients) => {
   ingredients.forEach(ingredient => {
     ingredient.quantity *= -1;
   });
-  return combineIngredientsKeepBoth(recipe, ingredients);
+  return combineIngredientsWithFailedConversion(recipe, ingredients);
 }
   // Takes in two arrays of objects with quantity, unit, and ingredient properties
 const combineIngredients = (ingredients, oldIngredients) => {
@@ -101,7 +101,42 @@ const combineIngredients = (ingredients, oldIngredients) => {
 //Need to make a combineIngredients method that puts it in return even if
 //ingredient cannot be converted. Will probably need to make an array of
 //weight and volume measurements and check them and only run convert if includes
-
+  // Takes in two arrays of objects with quantity, unit, and ingredient properties
+const combineIngredientsWithFailedConversion = (ingredients, oldIngredients) => {
+  // Converts the old ingredients array into an object
+  let ingredientsObj = {};
+  oldIngredients.forEach(ingredient => {
+    ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit, imageurl: ingredient.imageurl }
+  });
+  // Compares elements from the new ingredients array to old ingredients and converts as necessary
+  let results = [];
+  ingredients.forEach(newIngredient => {
+    let old = ingredientsObj[newIngredient.ingredient];
+    if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
+      throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
+    }
+    if (old && ((unitsVolumeList.includes(old.unit) && unitsVolumeList.includes(newIngredient.unit)) || (unitsMassList.includes(old.unit) && unitsMassList.includes(newIngredient.unit)) || (!old.unit && !newIngredient.unit))) {
+      if (old && unitsList.includes(old.unit) && unitsList.includes(newIngredient.unit)) {
+        try {
+          newIngredient.quantity = convert(newIngredient.quantity).from(newIngredient.unit).to(old.unit);
+        } catch(err) {
+          throw (`Cannot convert ${newIngredient.unit} to ${old.unit} for ${newIngredient.ingredient}`);
+        }
+        newIngredient.unit = old.unit;
+        let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient, imageurl: newIngredient.imageurl }]);
+        results.push(combinedWithUnits[0]);
+      } else if (old && !old.unit && !newIngredient.unit) {
+        let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: null, ingredient: newIngredient.ingredient, imageurl: newIngredient.imageurl }]);
+        results.push(combinedWithoutUnits[0]);
+      } else {
+        results.push(newIngredient);
+      }
+    } else {
+      results.push(newIngredient);
+    }
+  });
+  return results;
+};
   // Takes in two arrays of objects with quantity, unit, and ingredient properties
 const combineIngredientsKeepBoth = (ingredients, oldIngredients) => {
   let combinedIngredients;
