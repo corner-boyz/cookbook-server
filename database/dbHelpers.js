@@ -45,15 +45,16 @@ const createTables = () => {
     PRIMARY KEY(ingredient, email)
   );
   CREATE TABLE IF NOT EXISTS recipes(
-    recipeId INT NOT NULL PRIMARY KEY,
+    recipeId TEXT NOT NULL PRIMARY KEY,
     title TEXT,
     imageUrl TEXT,
     sourceUrl TEXT,
+    isExtension boolean DEFAULT FALSE,
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW());
   CREATE TABLE IF NOT EXISTS usersRecipes(
     email TEXT NOT NULL REFERENCES users(email),
-    recipeId INT NOT NULL REFERENCES recipes(recipeId),
+    recipeId TEXT NOT NULL REFERENCES recipes(recipeId),
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(email, recipeId));`
@@ -269,7 +270,12 @@ const deletePurchasedGroceries = ({ email, table }) => {
 
 const fetchUserRecipes = ({ email }) => {
   email = email.toLowerCase();
-  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where('email', email)
+  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': false})
+}
+
+const fetchUserExtensionRecipes = ({ email }) => {
+  email = email.toLowerCase();
+  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': true})
 }
 //====================================================
 module.exports = {
@@ -286,5 +292,6 @@ module.exports = {
   selectRecipe,
   deleteIngredients,
   fetchUserRecipes,
+  fetchUserExtensionRecipes,
   groceryListIntoIngredients
 };

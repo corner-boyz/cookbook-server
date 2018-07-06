@@ -96,14 +96,23 @@ app.get('/api/saverecipe/:recipeId/:email', (req, res) => {
   });
 });
 
-app.get('/api/userRecipes/:email', (req, res) => {
+app.get('/api/userrecipes/:email', (req, res) => {
   const { email } = req.params;
   // console.log('Server - Email: ', email);
   dbHelpers.fetchUserRecipes({ email: email })
     .then((results) => {
       res.send(results);
-    })
-})
+    });
+});
+
+app.get('/api/userextensionrecipes/:email', (req, res) => {
+  const { email } = req.params;
+  // console.log('Server - Email: ', email);
+  dbHelpers.fetchUserExtensionRecipes({ email: email })
+    .then((results) => {
+      res.send(results);
+    });
+});
 //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
@@ -244,8 +253,8 @@ app.post('/api/parse', (req, res) => {
 
 app.post('/api/saverecipe', (req, res) => {
   const { email, recipe } = req.body;
-  const { id, title, image, sourceUrl } = recipe;
-  dbHelpers.saveRecipe({ email: email, id: id, title: title, image: image, sourceUrl: sourceUrl })
+  const { id, title, image, sourceUrl, isExtension = false } = recipe;
+  dbHelpers.saveRecipe({ email: email, id: id, title: title, image: image, sourceUrl: sourceUrl, isExtension: isExtension })
     .then((results) => {
       console.log('SUCCESS saving recipe');
       res.send(results);
