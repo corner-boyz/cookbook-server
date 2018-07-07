@@ -82,6 +82,9 @@ const combineIngredients = (ingredients, oldIngredients) => {
   let results = [];
   ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
+    if (newIngredient.quantity === null || newIngredient.quantity === undefined) {
+      throw (`Please input quantity for ${newIngredient.ingredient}`);
+    }
     if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
       throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
     }
