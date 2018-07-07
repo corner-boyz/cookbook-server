@@ -233,6 +233,14 @@ app.post('/api/compare', (req, res) => {
   res.send(helpers.compareIngredients(recipe, ingredients));
 });
 
+app.post('/api/compareExtension', (req, res) => {
+  const { recipe, ingredients } = req.body;
+  recipe.forEach(ingredient => {
+    ingredient.quantity *= -1;
+  });
+  res.send(helpers.combineIngredientsExtension(recipe, ingredients));
+});
+
 app.post('/api/comparetorecipe', (req, res) => {
   const { recipe, ingredients } = req.body;
   console.log('recipe', recipe)
