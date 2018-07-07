@@ -167,6 +167,49 @@ const combineIngredientsKeepBoth = (ingredients, oldIngredients) => {
     throw err;
   }
 };
+
+ // Takes in two arrays of objects with quantity, unit, and ingredient properties
+ const combineIngredientsExtension = (ingredients, oldIngredients) => {
+    // Converts the old ingredients array into an object
+    let ingredientsObj = {};
+    oldIngredients.forEach(ingredient => {
+      ingredientsObj[ingredient.ingredient] = { quantity: ingredient.quantity, unit: ingredient.unit, imageurl: ingredient.imageurl }
+    });
+    // Compares elements from the new ingredients array to old ingredients and converts as necessary
+    let results = [];
+    ingredients.forEach(newIngredient => {
+      let old = ingredientsObj[newIngredient.ingredient];
+      // Don't think I need that any more
+      // if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
+      //   throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
+      // }
+      if (old && ((unitsVolumeList.includes(old.unit) && unitsVolumeList.includes(newIngredient.unit)) || (unitsMassList.includes(old.unit) && unitsMassList.includes(newIngredient.unit)) || (!old.unit && !newIngredient.unit))) {
+        if (old && unitsList.includes(old.unit) && unitsList.includes(newIngredient.unit)) {
+          let failed = false;
+          try {
+            newIngredient.quantity = convert(newIngredient.quantity).from(newIngredient.unit).to(old.unit);
+          } catch(err) {
+            failed = true;
+          }
+          if (!failed) {
+            newIngredient.unit = old.unit;
+            let combinedWithUnits = combine([newIngredient, { quantity: old.quantity, unit: old.unit, ingredient: newIngredient.ingredient, imageurl: newIngredient.imageurl }]);
+            results.push(combinedWithUnits[0]);
+          } else {
+            results.push(newIngredient);
+          }
+        } else if (old && !old.unit && !newIngredient.unit) {
+          let combinedWithoutUnits = combine([newIngredient, { quantity: old.quantity, unit: null, ingredient: newIngredient.ingredient, imageurl: newIngredient.imageurl }]);
+          results.push(combinedWithoutUnits[0]);
+        } else {
+          results.push(newIngredient);
+        }
+      } else {
+        results.push(newIngredient);
+      }
+    });
+    return results;
+};
 //====================================================
 module.exports = {
   parseIngredients,
@@ -175,6 +218,7 @@ module.exports = {
   compareIngredientsKeepBoth,
   combineIngredients,
   combineIngredientsKeepBoth,
+  combineIngredientsExtension,
   formatIngredients,
   convert,
   combine,
