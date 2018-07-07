@@ -202,8 +202,8 @@ const groceryListIntoIngredients = ({email, groceryIngredients, pantryIngredient
 
 const insertRecipe = (recipe) => {
   const query = `INSERT INTO
-  recipes (recipeId, title, imageUrl, sourceUrl)
-  SELECT :id, :title, :image, :sourceUrl
+  recipes (recipeId, title, imageUrl, sourceUrl, isExtension)
+  SELECT :id, :title, :image, :sourceUrl, :isExtension
     WHERE NOT EXISTS (
       SELECT recipeId FROM recipes WHERE recipeId = :id
   );`

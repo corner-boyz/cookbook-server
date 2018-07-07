@@ -257,8 +257,8 @@ app.post('/api/formatparse', (req, res) => {
 });
 
 app.post('/api/saverecipe', (req, res) => {
-  const { email, recipe } = req.body;
-  const { id, title, image, sourceUrl, isExtension = false } = recipe;
+  const { email, recipe, isExtension = false } = req.body;
+  const { id, title, image, sourceUrl } = recipe;
   dbHelpers.saveRecipe({ email: email, id: id, title: title, image: image, sourceUrl: sourceUrl, isExtension: isExtension })
     .then((results) => {
       console.log('SUCCESS saving recipe');
