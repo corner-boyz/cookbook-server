@@ -270,12 +270,12 @@ const deletePurchasedGroceries = ({ email, table }) => {
 
 const fetchUserRecipes = ({ email }) => {
   email = email.toLowerCase();
-  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': false})
+  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': false});
 }
 
 const fetchUserExtensionRecipes = ({ email }) => {
   email = email.toLowerCase();
-  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': true})
+  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': true});
 }
 //====================================================
 module.exports = {
