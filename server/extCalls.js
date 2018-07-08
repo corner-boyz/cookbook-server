@@ -28,7 +28,7 @@ const getRecipesByIngredients = (ingredients) => {
       }
     })
   } else {
-    q = ingredients;
+    q = ingredients.ingredients;
   }
   return axios.get(url + q,
     {
