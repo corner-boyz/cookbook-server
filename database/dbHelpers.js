@@ -26,7 +26,9 @@ const createTables = () => {
   );
   CREATE TABLE IF NOT EXISTS ingredientImages(
     ingredient TEXT NOT NULL PRIMARY KEY,
-    imageUrl TEXT
+    imageUrl TEXT,
+    createdAt TIMESTAMPTZ DEFAULT NOW(),
+    updatedAt TIMESTAMPTZ DEFAULT NOW()
   );
   CREATE TABLE IF NOT EXISTS ingredients(
     ingredient TEXT NOT NULL,
