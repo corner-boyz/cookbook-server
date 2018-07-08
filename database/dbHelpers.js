@@ -80,21 +80,17 @@ const selectUser = ({ email }) => {
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
   email = email.toLowerCase();
-  const query = `SELECT ${table}.ingredient, email, quantity, unit, imageurl, createdat, updatedat
-    FROM ${table} 
-    LEFT OUTER JOIN ingredientimages
-    ON ${table}.ingredient = ingredientimages.ingredient
-    WHERE email = :email
-    ORDER BY ${table}.ingredient`
+  const query = `SELECT ${table}.*, ingredientimages.imageurl
+      FROM ${table} 
+      LEFT OUTER JOIN ingredientimages
+      ON ${table}.ingredient = ingredientimages.ingredient
+      WHERE email = :email
+      ORDER BY ${table}.ingredient`
 
   return db.raw(query, {email: email}).then((results) => {
     return results.rows;
   });
 };
-
-// selectIngredients({email:'theohzonelayer@gmail.com', table:'grocerylist'}).then((results) => {
-//   console.log('select', results.rows)
-// })
 
 const selectPurchasedGroceryList = ({ email }) => {
   email = email.toLowerCase();
