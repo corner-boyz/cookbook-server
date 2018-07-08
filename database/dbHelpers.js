@@ -1,5 +1,5 @@
 const db = require('./database').knex;
-
+const extCalls = require('../server/extCalls');
 const helpers = require('../server/helpers');
 //====================================================
 //Creates tables if they don't exist yet
@@ -23,6 +23,10 @@ const createTables = () => {
     createdAt TIMESTAMPTZ DEFAULT NOW(),
     updatedAt TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY(email, pantryId)
+  );
+  CREATE TABLE IF NOT EXISTS ingredientImages(
+    ingredient TEXT NOT NULL PRIMARY KEY,
+    imageUrl TEXT
   );
   CREATE TABLE IF NOT EXISTS ingredients(
     ingredient TEXT NOT NULL,
@@ -76,8 +80,21 @@ const selectUser = ({ email }) => {
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
   email = email.toLowerCase();
-  return db.select('*').from(table).where('email', email).orderBy('ingredient');
+  const query = `SELECT ${table}.ingredient, email, quantity, unit, imageurl, createdat, updatedat
+    FROM ${table} 
+    LEFT OUTER JOIN ingredientimages
+    ON ${table}.ingredient = ingredientimages.ingredient
+    WHERE email = :email
+    ORDER BY ${table}.ingredient`
+
+  return db.raw(query, {email: email}).then((results) => {
+    return results.rows;
+  });
 };
+
+// selectIngredients({email:'theohzonelayer@gmail.com', table:'grocerylist'}).then((results) => {
+//   console.log('select', results.rows)
+// })
 
 const selectPurchasedGroceryList = ({ email }) => {
   email = email.toLowerCase();
@@ -89,11 +106,21 @@ const selectRecipe = ({ email, recipeId }) => {
   email = email.toLowerCase();
   return db.select('recipeid').from('usersrecipes').where({email: email, recipeid: recipeId});
 };
+
+const selectIngredientImage = ({ ingredient }) => {
+  return db.select('*').from('ingredientimages').where({ingredient: ingredient});
+}
 //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({ email, password, name }) => {
   email = email.toLowerCase();
   return db('users').insert({ email: email, password: password, name: name });
+};
+
+const insertIngredientImage = ({ ingredient }) => {
+  return extCalls.getImageByString(ingredient).then((results) => {
+    return db('ingredientimages').insert({ ingredient: ingredient, imageurl: results });
+  })
 };
 
 // Takes in object with email and either ingredients array or ingredients object
@@ -111,12 +138,19 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
   let params = [];
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ ingredient, quantity, unit, ispurchased }) => {
+      selectIngredientImage({ingredient: ingredient}).then((results) => {
+        if (!results.length) {
+          insertIngredientImage({ingredient: ingredient}).then((results) => {
+            return results;
+          });
+        }
+      });
       params.push({ email: email, ingredient: ingredient, quantity: quantity, unit: unit, ispurchased: ispurchased });
     });
   } else {
     params.push({ email: email, ingredient: ingredients.ingredient, quantity: ingredients.quantity, unit: ingredients.unit });
   }
-  
+
   let query = '';
   if (table === 'ingredients') {
     query = `INSERT INTO 
@@ -273,9 +307,9 @@ const fetchUserRecipes = ({ email }) => {
   return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': false});
 }
 
-const fetchUserExtensionRecipes = ({ email }) => {
+const fetchUserExtensionRecipes = ({ email }) => {return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': true});
   email = email.toLowerCase();
-  return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': true});
+  
 }
 //====================================================
 module.exports = {
