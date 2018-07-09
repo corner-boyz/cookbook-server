@@ -23,7 +23,7 @@ const unitsVolumeList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'l', 
 const unitsMassList = ['oz', 'lb', 'g', 'kg'];
 const unitsList = unitsVolumeList.concat(unitsMassList);
 
-const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'ground', 'strip', 'strips', 'light', 'salted', 'of', 'granulated', 'granulate'];
+const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'ground', 'strip', 'strips', 'light', 'salted', 'unsalted', 'of', 'granulated', 'granulate', 'vine', 'ripe', 'ripened', 'whole', 'active', 'canned'];
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
   let parsed = ingredients.map(ingredient => {
