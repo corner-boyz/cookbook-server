@@ -228,6 +228,11 @@ app.post('/api/combine', (req, res) => {
   res.send(helpers.combineIngredients(ingredients, oldIngredients));
 });
 
+app.post('/api/combineExtension', (req, res) => {
+  const { ingredients, oldIngredients } = req.body;
+  res.send(helpers.combineIngredientsExtension(ingredients, oldIngredients));
+});
+
 app.post('/api/compare', (req, res) => {
   const { recipe, ingredients } = req.body;
   res.send(helpers.compareIngredients(recipe, ingredients));
