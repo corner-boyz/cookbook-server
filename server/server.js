@@ -32,16 +32,7 @@ app.get('/api/ingredients/:email', (req, res) => {
   const table = 'ingredients';
   dbHelpers.selectIngredients({ email: email, table: table }).then((ingredients) => {
     console.log('SUCCESS getting ingredients from DB');
-    let images = [];
-    ingredients.forEach((ingredient) => {
-      images.push(extCalls.getImageByString(ingredient.ingredient));
-    });
-    Promise.all(images).then((results) => {
-      for (let i = 0; i < ingredients.length; i++) {
-        ingredients[i].imageurl = results[i]; 
-      }
-      res.send(ingredients);
-    });
+    res.send(ingredients);
   }).catch((err) => {
     console.error('ERROR getting ingredients from DB', err);
     res.status(404).end();
@@ -53,17 +44,7 @@ app.get('/api/grocerylist/:email', (req, res) => {
   const table = 'grocerylist';
   dbHelpers.selectIngredients({ email: email, table: table }).then((ingredients) => {
     console.log('SUCCESS getting groceryList from DB');
-    let images = [];
-    ingredients.forEach((ingredient) => {
-      images.push(extCalls.getImageByString(ingredient.ingredient));
-    });
-    Promise.all(images).then((results) => {
-      for (let i = 0; i < ingredients.length; i++) {
-        ingredients[i].imageurl = results[i]; 
-      }
-      // console.log('PROMISE STUFF', ingredients);
-      res.send(ingredients);
-    });
+    res.send(ingredients);
   }).catch((err) => {
     console.error('ERROR getting groceryList from DB', err);
     res.status(404).end();
