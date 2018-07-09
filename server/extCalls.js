@@ -1,17 +1,33 @@
 const axios = require('axios');
+const unirest = require('unirest');
+
+// const getImageByString = (ingredient) => {
+//   const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&image_type=vector&category=food&per_page=3&safesearch=true&q=${ingredient}`;
+//   return axios.get(url).then((results) => {
+//     // console.log('HEADERS', results.headers);
+//     if (results.data.hits.length) {
+//       return results.data.hits[0].previewURL;
+//     } else {
+//       return undefined;
+//     }
+//   }).catch((err) => {
+//     console.error('Pixabay limiting use');
+//     return undefined;
+//   });
+// }
 
 const getImageByString = (ingredient) => {
-  const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&image_type=vector&category=food&per_page=3&safesearch=true&q=${ingredient}`;
-  return axios.get(url).then((results) => {
-    // console.log('HEADERS', results.headers);
-    if (results.data.hits.length) {
-      return results.data.hits[0].previewURL;
-    } else {
-      return undefined;
+  return new Promise((resolve, reject) => {
+    unirest.post("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/food/detect")
+    .header("X-Mashape-Key", process.env.SPOONACULAR_KEY)
+    .header("X-Mashape-Host", "spoonacular-recipe-food-nutrition-v1.p.mashape.com")
+    .header("Content-Type", "application/x-www-form-urlencoded")
+    .send("text=" + ingredient)
+    .end(function (result) {
+    if (result.body.annotations.length) {
+      resolve(result.body.annotations[0].image)
     }
-  }).catch((err) => {
-    console.error('Pixabay limiting use');
-    return undefined;
+    });
   });
 }
 
@@ -28,7 +44,7 @@ const getRecipesByIngredients = (ingredients) => {
       }
     })
   } else {
-    q = ingredients;
+    q = ingredients.ingredients;
   }
   return axios.get(url + q,
     {
