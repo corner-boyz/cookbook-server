@@ -44,6 +44,7 @@ app.get('/api/grocerylist/:email', (req, res) => {
   const table = 'grocerylist';
   dbHelpers.selectIngredients({ email: email, table: table }).then((ingredients) => {
     console.log('SUCCESS getting groceryList from DB');
+    console.log('status', res.status);
     res.send(ingredients);
   }).catch((err) => {
     console.error('ERROR getting groceryList from DB', err);
@@ -207,6 +208,11 @@ app.post('/api/grocerylistintopantry', (req, res) => {
 app.post('/api/combine', (req, res) => {
   const { ingredients, oldIngredients } = req.body;
   res.send(helpers.combineIngredients(ingredients, oldIngredients));
+});
+
+app.post('/api/combineExtension', (req, res) => {
+  const { ingredients, oldIngredients } = req.body;
+  res.send(helpers.combineIngredientsExtension(ingredients, oldIngredients));
 });
 
 app.post('/api/compare', (req, res) => {
