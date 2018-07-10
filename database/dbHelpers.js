@@ -153,17 +153,17 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
   if (table === 'ingredients') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit) 
-      VALUES(:email, :ingredient, :quantity, :unit) 
+      VALUES(:email, :ingredient, ROUND(:quantity, 2), :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit;`;
   } else if (table === 'grocerylist') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit, ispurchased) 
       VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit, ispurchased = :ispurchased;`;
   }
 
   let promises = [];
@@ -191,17 +191,17 @@ const insertIngredientsByKeeping = ({ email, oldIngredients, ingredients, should
   if (table === 'ingredients') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit) 
-      VALUES(:email, :ingredient, :quantity, :unit) 
+      VALUES(:email, :ingredient, ROUND(:quantity, 2), :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit;`;
   } else if (table === 'grocerylist') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit, ispurchased) 
       VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit, ispurchased = :ispurchased;`;
   }
 
   let promises = [];
@@ -228,7 +228,7 @@ const groceryListIntoIngredients = ({email, groceryIngredients, pantryIngredient
         WHERE email = :email 
         AND ispurchased = TRUE
       ON CONFLICT(email, ingredient)
-        DO UPDATE SET quantity = ingredients.quantity + excluded.quantity;`;
+        DO UPDATE SET quantity = ROUND(ingredients.quantity + excluded.quantity, 2);`;
   return db.raw(query, {email: email, combinedIngredients: combinedIngredients});
 }
 
