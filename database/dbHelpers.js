@@ -75,13 +75,13 @@ createTables().then((results) => {
 //====================================================
 // Takes in object with email
 const selectUser = ({ email }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   return db.select('email', 'name', 'password').from('users').where('email', email);
 };
 
 // Takes in object with email
 const selectIngredients = ({ email, table }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   const query = `SELECT ${table}.*, ingredientimages.imageurl
       FROM ${table} 
       LEFT OUTER JOIN ingredientimages
@@ -95,13 +95,13 @@ const selectIngredients = ({ email, table }) => {
 };
 
 const selectPurchasedGroceryList = ({ email }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   return db.select('*').from('grocerylist').where({email: email, ispurchased: true}).orderBy('ingredient');
 };
 
 // Takes in object with email and recipeId
 const selectRecipe = ({ email, recipeId }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   return db.select('recipeid').from('usersrecipes').where({email: email, recipeid: recipeId});
 };
 
@@ -111,7 +111,7 @@ const selectIngredientImage = ({ ingredient }) => {
 //====================================================
 // Takes in object with email, password, and name
 const insertUser = ({ email, password, name }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   return db('users').insert({ email: email, password: password, name: name });
 };
 
@@ -124,7 +124,7 @@ const insertIngredientImage = ({ ingredient }) => {
 // Takes in object with email and either ingredients array or ingredients object
 // Inserts row if ingredient for email exists else updates that row with new quantity and unit
 const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   if (!shouldReplace) {
     try {
       ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
@@ -153,17 +153,17 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
   if (table === 'ingredients') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit) 
-      VALUES(:email, :ingredient, :quantity, :unit) 
+      VALUES(:email, :ingredient, ROUND(:quantity, 2), :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit;`;
   } else if (table === 'grocerylist') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit, ispurchased) 
       VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit, ispurchased = :ispurchased;`;
   }
 
   let promises = [];
@@ -174,7 +174,7 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
 };
 
 const insertIngredientsByKeeping = ({ email, oldIngredients, ingredients, shouldReplace, table }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   if (!shouldReplace) {
     ingredients = helpers.combineIngredientsKeepBoth(ingredients, oldIngredients);
   }
@@ -191,17 +191,17 @@ const insertIngredientsByKeeping = ({ email, oldIngredients, ingredients, should
   if (table === 'ingredients') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit) 
-      VALUES(:email, :ingredient, :quantity, :unit) 
+      VALUES(:email, :ingredient, ROUND(:quantity, 2), :unit) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit;`;
   } else if (table === 'grocerylist') {
     query = `INSERT INTO 
       ${table} (email, ingredient, quantity, unit, ispurchased) 
       VALUES(:email, :ingredient, :quantity, :unit, :ispurchased) 
       ON CONFLICT(email, ingredient) 
       DO UPDATE
-      SET quantity = :quantity, unit = :unit, ispurchased = :ispurchased;`;
+      SET quantity = ROUND(:quantity, 2), unit = :unit, ispurchased = :ispurchased;`;
   }
 
   let promises = [];
@@ -228,7 +228,7 @@ const groceryListIntoIngredients = ({email, groceryIngredients, pantryIngredient
         WHERE email = :email 
         AND ispurchased = TRUE
       ON CONFLICT(email, ingredient)
-        DO UPDATE SET quantity = ingredients.quantity + excluded.quantity;`;
+        DO UPDATE SET quantity = ROUND(ingredients.quantity + excluded.quantity, 2);`;
   return db.raw(query, {email: email, combinedIngredients: combinedIngredients});
 }
 
@@ -273,41 +273,40 @@ const saveRecipe = (recipe) => {
 }
 //====================================================
 const deleteRecipe = (params) => {
-  params.email = params.email.toLowerCase();
+  params.email = params.email.toLowerCase().trim();
   const query = `DELETE FROM usersrecipes
     WHERE email = :email AND recipeid = :id`;
   return db.raw(query, params);
 }
 
 const deleteIngredients = ({ email, table }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND quantity <= 0`;
   return db.raw(query, { email });
 }
 
 const deleteGroceries = ({ email, table }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND quantity <= 0`;
   return db.raw(query, { email });
 }
 
 const deletePurchasedGroceries = ({ email, table }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND (quantity <= 0 OR ispurchased = TRUE)`;
   return db.raw(query, { email });
 }
 
 const fetchUserRecipes = ({ email }) => {
-  email = email.toLowerCase();
+  email = email.toLowerCase().trim();
   return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': false});
 }
 
 const fetchUserExtensionRecipes = ({ email }) => {return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': true});
-  email = email.toLowerCase();
-  
+  email = email.toLowerCase().trim();
 }
 //====================================================
 module.exports = {
