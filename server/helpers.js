@@ -82,8 +82,13 @@ const combineIngredients = (ingredients, oldIngredients) => {
   let results = [];
   ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
-    if (newIngredient.quantity === null || newIngredient.quantity === undefined) {
-      throw (`Please input quantity for ${newIngredient.ingredient}`);
+    if (newIngredient.quantity === null || newIngredient.quantity === undefined || (old && (old.quantity === null || old.quantity === undefined))) {
+      // throw (`Please input quantity for ${newIngredient.ingredient}`);
+      old = {};
+      old.ingredient = newIngredient.ingredient;
+      old.quantity = null;
+      old.unit = null;
+      newIngredient.unit = null;
     }
     if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
       throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);
@@ -118,6 +123,15 @@ const combineIngredientsWithFailedConversion = (ingredients, oldIngredients) => 
   let results = [];
   ingredients.forEach(newIngredient => {
     let old = ingredientsObj[newIngredient.ingredient];
+    if (newIngredient.quantity === null || newIngredient.quantity === undefined || (old && (old.quantity === null || old.quantity === undefined || old.quantity === -0))) {
+      // throw (`Please input quantity for ${newIngredient.ingredient}`);
+      console.log('comaring')
+      old = {};
+      old.ingredient = newIngredient.ingredient;
+      old.quantity = null;
+      old.unit = null;
+      newIngredient.unit = null;
+    }
     // Don't think I need that any more
     // if (old && (old.unit !== newIngredient.unit && (!old.unit || !newIngredient.unit))) {
     //   throw (`Cannot convert ${newIngredient.unit !== null ? newIngredient.unit : 'count'} to ${old.unit !== null ? old.unit : 'count'} for ${newIngredient.ingredient}`);

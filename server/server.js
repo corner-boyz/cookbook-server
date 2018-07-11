@@ -230,11 +230,12 @@ app.post('/api/compareExtension', (req, res) => {
 
 app.post('/api/comparetorecipe', (req, res) => {
   const { recipe, ingredients } = req.body;
-  console.log('recipe', recipe)
+  // console.log('recipe', recipe)
   const difference = helpers.compareIngredientsKeepBoth(helpers.formatIngredients(recipe), ingredients);
   const filtered = difference.filter((ingredient) => {
     return ingredient.quantity > 0
   });
+  console.log('difference', difference)
   filtered.forEach((ingredient) => {
     ingredient.ispurchased = false;
   })
