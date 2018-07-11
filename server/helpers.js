@@ -125,7 +125,6 @@ const combineIngredientsWithFailedConversion = (ingredients, oldIngredients) => 
     let old = ingredientsObj[newIngredient.ingredient];
     if (newIngredient.quantity === null || newIngredient.quantity === undefined || (old && (old.quantity === null || old.quantity === undefined || old.quantity === -0))) {
       // throw (`Please input quantity for ${newIngredient.ingredient}`);
-      console.log('comaring')
       old = {};
       old.ingredient = newIngredient.ingredient;
       old.quantity = null;
