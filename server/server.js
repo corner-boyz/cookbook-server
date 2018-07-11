@@ -94,6 +94,17 @@ app.get('/api/userextensionrecipes/:email', (req, res) => {
       res.send(results);
     });
 });
+
+app.get('/api/usercombinedrecipes/:email', (req, res) => {
+  const { email } = req.params;
+  dbHelpers.fetchUserRecipes({ email: email })
+    .then((results) => {
+      dbHelpers.fetchUserExtensionRecipes({ email: email })
+        .then((newResults) => {
+          res.send(results.concat(newResults));
+        });
+    });
+});
 //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
