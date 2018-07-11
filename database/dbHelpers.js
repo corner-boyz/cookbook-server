@@ -136,6 +136,9 @@ const insertIngredients = ({ email, oldIngredients, ingredients, shouldReplace, 
   let params = [];
   if (Array.isArray(ingredients)) {
     ingredients.forEach(({ ingredient, quantity, unit, ispurchased }) => {
+      if (quantity === null || quantity === undefined) {
+        unit = null;
+      }
       selectIngredientImage({ingredient: ingredient}).then((results) => {
         if (!results.length) {
           insertIngredientImage({ingredient: ingredient}).then((results) => {

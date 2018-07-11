@@ -95,6 +95,17 @@ app.get('/api/userextensionrecipes/:email', (req, res) => {
       res.send(results);
     });
 });
+
+app.get('/api/usercombinedrecipes/:email', (req, res) => {
+  const { email } = req.params;
+  dbHelpers.fetchUserRecipes({ email: email })
+    .then((results) => {
+      dbHelpers.fetchUserExtensionRecipes({ email: email })
+        .then((newResults) => {
+          res.send(results.concat(newResults));
+        });
+    });
+});
 //Post Requests====================================================
 app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
@@ -230,11 +241,12 @@ app.post('/api/compareExtension', (req, res) => {
 
 app.post('/api/comparetorecipe', (req, res) => {
   const { recipe, ingredients } = req.body;
-  console.log('recipe', recipe)
+  // console.log('recipe', recipe)
   const difference = helpers.compareIngredientsKeepBoth(helpers.formatIngredients(recipe), ingredients);
   const filtered = difference.filter((ingredient) => {
     return ingredient.quantity > 0
   });
+  console.log('difference', difference)
   filtered.forEach((ingredient) => {
     ingredient.ispurchased = false;
   })
