@@ -303,6 +303,13 @@ const deletePurchasedGroceries = ({ email, table }) => {
   return db.raw(query, { email });
 }
 
+const deleteSpecificGrocery = ({ email, ingredient, table }) => {
+  email = email.toLowerCase().trim();
+  const query = `DELETE FROM ${table}
+    WHERE email = :email AND ingredient = :ingredient`;
+  return db.raw(query, { email, ingredient });
+}
+
 const fetchUserRecipes = ({ email }) => {
   email = email.toLowerCase().trim();
   return db.select('*').from('recipes').join('usersrecipes', 'recipes.recipeid', '=', 'usersrecipes.recipeid').where({'email': email, 'isextension': false});
@@ -323,6 +330,7 @@ module.exports = {
   deleteRecipe,
   deleteGroceries,
   deletePurchasedGroceries,
+  deleteSpecificGrocery,
   selectRecipe,
   deleteIngredients,
   fetchUserRecipes,

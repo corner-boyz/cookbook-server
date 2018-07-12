@@ -223,6 +223,36 @@ app.post('/api/grocerylistintopantry', (req, res) => {
   });
 });
 
+app.post('/api/groceryitemintopantry', (req, res) => {
+  const { email, ingredients, shouldReplace} = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
+  });
+  let oldIngredients = ingredients;
+  dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
+      Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+        .then((results) => {
+          console.log('SUCCESS inserting into groceryList', results);
+          return Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: pantryIngredients, ingredients: oldIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
+        })
+        .then(() => {
+          console.log('SUCCESS inserting into ingredients from groceryList');
+          return dbHelpers.deletePurchasedGroceries({ email: email, table: table });
+        })
+        .then((results) => {
+          console.log('SUCCESS deleting purchased groceries or with 0 quantities');
+          res.send(results);
+        })
+        .catch((err) => {
+          console.error('ERROR converting units', err);
+          res.status(406).end(err);
+        });
+  });
+});
+
 app.post('/api/combine', (req, res) => {
   const { ingredients, oldIngredients } = req.body;
   res.send(helpers.combineIngredients(ingredients, oldIngredients));
