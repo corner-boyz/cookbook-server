@@ -1,5 +1,4 @@
 const axios = require('axios');
-const unirest = require('unirest');
 
 // const getImageByString = (ingredient) => {
 //   const url = `https://pixabay.com/api/?key=${process.env.PIXABAY_KEY}&image_type=vector&category=food&per_page=3&safesearch=true&q=${ingredient}`;
@@ -16,18 +15,21 @@ const unirest = require('unirest');
 //   });
 // }
 
-const getImageByString = (ingredient) => {
-  return new Promise((resolve, reject) => {
-    unirest.post("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/food/detect")
-    .header("X-Mashape-Key", process.env.SPOONACULAR_KEY)
-    .header("X-Mashape-Host", "spoonacular-recipe-food-nutrition-v1.p.mashape.com")
-    .header("Content-Type", "application/x-www-form-urlencoded")
-    .send("text=" + ingredient)
-    .end(function (result) {
-    if (result.body.annotations.length) {
-      resolve(result.body.annotations[0].image)
+const getImageByString = async (ingredient) => {
+  var options = {
+    method: 'POST',
+    url: 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/food/detect',
+    data: 'text=' + ingredient,
+    headers: {
+      "X-Mashape-Key": process.env.SPOONACULAR_KEY,
+      "X-Mashape-Host": "spoonacular-recipe-food-nutrition-v1.p.mashape.com",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+  };
+  return axios(options).then((results) => {
+    if (results.data.annotations.length) {
+      return results.data.annotations[0].image;
     }
-    });
   });
 }
 
