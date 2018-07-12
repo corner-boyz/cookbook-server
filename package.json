@@ -1,6 +1,6 @@
 {
-  "name": "cookbook",
-  "version": "1.0.0",
+  "name": "flexchef",
+  "version": "1.0.2",
   "description": "Pantry tracker and recipe maker",
   "author": "Calvin Chui, Joseph Oh, Carter Robinson",
   "main": "client.jsx",
