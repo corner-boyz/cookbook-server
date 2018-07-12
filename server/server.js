@@ -240,7 +240,7 @@ app.post('/api/groceryitemintopantry', (req, res) => {
         })
         .then(() => {
           console.log('SUCCESS inserting into ingredients from groceryList');
-          return dbHelpers.deletePurchasedGroceries({ email: email, table: table });
+          return dbHelpers.deleteSpecificGrocery({ email: email, table: table, ingredient: oldIngredients[0].ingredient });
         })
         .then((results) => {
           console.log('SUCCESS deleting purchased groceries or with 0 quantities');

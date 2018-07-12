@@ -304,6 +304,7 @@ const deletePurchasedGroceries = ({ email, table }) => {
 }
 
 const deleteSpecificGrocery = ({ email, ingredient, table }) => {
+  console.log('delete', ingredient)
   email = email.toLowerCase().trim();
   const query = `DELETE FROM ${table}
     WHERE email = :email AND ingredient = :ingredient`;
