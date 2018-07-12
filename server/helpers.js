@@ -30,7 +30,9 @@ const parseIngredients = (ingredients) => {
     // Create object using 'recipe ingredient parser' module
     let obj = parse(ingredient.toLowerCase());
     // Convert to singular
-    obj.ingredient = pluralize.singular(obj.ingredient);
+    if (obj.ingredient !== 'ramen') {
+      obj.ingredient = pluralize.singular(obj.ingredient);
+    }
     if (obj.ingredient.length > 1) {
       obj.ingredient = obj.ingredient.split(' ').filter((word) => {
         return !filteredOutWords.includes(word);

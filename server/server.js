@@ -44,7 +44,6 @@ app.get('/api/grocerylist/:email', (req, res) => {
   const table = 'grocerylist';
   dbHelpers.selectIngredients({ email: email, table: table }).then((ingredients) => {
     console.log('SUCCESS getting groceryList from DB');
-    console.log('status', res.status);
     res.send(ingredients);
   }).catch((err) => {
     console.error('ERROR getting groceryList from DB', err);
@@ -111,7 +110,9 @@ app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
   const table = 'ingredients';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
     try {
@@ -138,7 +139,9 @@ app.post('/api/grocerylist', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
@@ -167,7 +170,9 @@ app.post('/api/grocerylistcheckboxes', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
@@ -187,7 +192,9 @@ app.post('/api/grocerylistintopantry', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   
   dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
