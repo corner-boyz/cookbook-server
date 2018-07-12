@@ -23,14 +23,16 @@ const unitsVolumeList = ['tsp', 'Tbs', 'fl-oz', 'cup', 'pnt', 'qt', 'gal', 'l', 
 const unitsMassList = ['oz', 'lb', 'g', 'kg'];
 const unitsList = unitsVolumeList.concat(unitsMassList);
 
-const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'strip', 'strips', 'light', 'salted', 'unsalted', 'of', 'granulated', 'granulate', 'vine', 'ripe', 'ripened', 'whole', 'active', 'canned', 'loaf', 'loaves'];
+const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'strip', 'strips', 'light', 'salted', 'unsalted', 'of', 'granulated', 'granulate', 'vine', 'ripe', 'ripened', 'whole', 'active', 'canned', 'loaf', 'loaves', 'nonfat', 'coarse'];
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
   let parsed = ingredients.map(ingredient => {
     // Create object using 'recipe ingredient parser' module
     let obj = parse(ingredient.toLowerCase());
     // Convert to singular
-    obj.ingredient = pluralize.singular(obj.ingredient);
+    if (obj.ingredient !== 'ramen') {
+      obj.ingredient = pluralize.singular(obj.ingredient);
+    }
     if (obj.ingredient.length > 1) {
       obj.ingredient = obj.ingredient.split(' ').filter((word) => {
         return !filteredOutWords.includes(word);
@@ -125,7 +127,6 @@ const combineIngredientsWithFailedConversion = (ingredients, oldIngredients) => 
     let old = ingredientsObj[newIngredient.ingredient];
     if (newIngredient.quantity === null || newIngredient.quantity === undefined || (old && (old.quantity === null || old.quantity === undefined || old.quantity === -0))) {
       // throw (`Please input quantity for ${newIngredient.ingredient}`);
-      console.log('comaring')
       old = {};
       old.ingredient = newIngredient.ingredient;
       old.quantity = null;

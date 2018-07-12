@@ -44,7 +44,6 @@ app.get('/api/grocerylist/:email', (req, res) => {
   const table = 'grocerylist';
   dbHelpers.selectIngredients({ email: email, table: table }).then((ingredients) => {
     console.log('SUCCESS getting groceryList from DB');
-    console.log('status', res.status);
     res.send(ingredients);
   }).catch((err) => {
     console.error('ERROR getting groceryList from DB', err);
@@ -111,7 +110,9 @@ app.post('/api/ingredients', (req, res) => {
   const { email, ingredients, shouldReplace } = req.body;
   const table = 'ingredients';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
     try {
@@ -138,7 +139,9 @@ app.post('/api/grocerylist', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
@@ -167,7 +170,9 @@ app.post('/api/grocerylistcheckboxes', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   
   dbHelpers.selectIngredients({ email: email, table: table}).then((oldIngredients) => {
@@ -187,7 +192,9 @@ app.post('/api/grocerylistintopantry', (req, res) => {
   const { email, ingredients, shouldReplace} = req.body;
   const table = 'grocerylist';
   ingredients.forEach(object => {
-    object.ingredient = helpers.pluralize.singular(object.ingredient);
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
   });
   
   dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
@@ -213,6 +220,36 @@ app.post('/api/grocerylistintopantry', (req, res) => {
           res.status(406).end(err);
         });
     });
+  });
+});
+
+app.post('/api/groceryitemintopantry', (req, res) => {
+  const { email, ingredients, shouldReplace} = req.body;
+  const table = 'grocerylist';
+  ingredients.forEach(object => {
+    if (object.ingredient !== 'ramen') {
+      object.ingredient = helpers.pluralize.singular(object.ingredient);
+    }
+  });
+  let oldIngredients = ingredients;
+  dbHelpers.selectIngredients({ email: email, table: 'ingredients'}).then((pantryIngredients) => {
+      Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: oldIngredients, ingredients: ingredients, shouldReplace: shouldReplace, table: table }))
+        .then((results) => {
+          console.log('SUCCESS inserting into groceryList', results);
+          return Promise.all(dbHelpers.insertIngredientsByKeeping({ email: email, oldIngredients: pantryIngredients, ingredients: oldIngredients, shouldReplace: !shouldReplace, table: 'ingredients' }));
+        })
+        .then(() => {
+          console.log('SUCCESS inserting into ingredients from groceryList');
+          return dbHelpers.deleteSpecificGrocery({ email: email, table: table, ingredient: oldIngredients[0].ingredient });
+        })
+        .then((results) => {
+          console.log('SUCCESS deleting purchased groceries or with 0 quantities');
+          res.send(results);
+        })
+        .catch((err) => {
+          console.error('ERROR converting units', err);
+          res.status(406).end(err);
+        });
   });
 });
 
@@ -246,7 +283,6 @@ app.post('/api/comparetorecipe', (req, res) => {
   const filtered = difference.filter((ingredient) => {
     return ingredient.quantity > 0
   });
-  console.log('difference', difference)
   filtered.forEach((ingredient) => {
     ingredient.ispurchased = false;
   })
