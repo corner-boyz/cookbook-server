@@ -246,7 +246,6 @@ app.post('/api/comparetorecipe', (req, res) => {
   const filtered = difference.filter((ingredient) => {
     return ingredient.quantity > 0
   });
-  console.log('difference', difference)
   filtered.forEach((ingredient) => {
     ingredient.ispurchased = false;
   })
