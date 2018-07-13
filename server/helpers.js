@@ -24,13 +24,14 @@ const unitsMassList = ['oz', 'lb', 'g', 'kg'];
 const unitsList = unitsVolumeList.concat(unitsMassList);
 
 const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'strip', 'strips', 'light', 'salted', 'unsalted', 'of', 'granulated', 'granulate', 'vine', 'ripe', 'ripened', 'whole', 'active', 'canned', 'loaf', 'loaves', 'nonfat', 'coarse'];
+const filteredOutSingulars = ['cow peas', 'peas', 'black eyed peas', 'ramen'];
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
   let parsed = ingredients.map(ingredient => {
     // Create object using 'recipe ingredient parser' module
     let obj = parse(ingredient.toLowerCase());
     // Convert to singular
-    if (obj.ingredient !== 'ramen') {
+    if (!filteredOutSingulars.includes(obj.ingredient)) {
       obj.ingredient = pluralize.singular(obj.ingredient);
     }
     if (obj.ingredient.length > 1) {
