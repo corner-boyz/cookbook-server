@@ -24,7 +24,7 @@ const unitsMassList = ['oz', 'lb', 'g', 'kg'];
 const unitsList = unitsVolumeList.concat(unitsMassList);
 
 const filteredOutWords = ['serving', 'servings', 'handful', 'handfuls', 'fresh', 'freshly', 'strip', 'strips', 'light', 'salted', 'unsalted', 'of', 'granulated', 'granulate', 'vine', 'ripe', 'ripened', 'whole', 'active', 'canned', 'loaf', 'loaves', 'nonfat', 'coarse'];
-const filteredOutSingulars = ['cow peas', 'peas', 'black eyed peas', 'ramen'];
+const filteredOutSingulars = ['cow peas', 'peas', 'black eyed peas', 'ramen', 'dos equis'];
 // Takes in array of strings
 const parseIngredients = (ingredients) => {
   let parsed = ingredients.map(ingredient => {
