@@ -13,7 +13,7 @@ const convert = require('convert-units');
 
 const bcrypt = require('bcrypt');
 
-const filteredOutSingulars = ['cow peas', 'peas', 'black eyed peas', 'ramen', 'dos equis'];
+const filteredOutSingulars = ['cow peas', 'peas', 'black eyed peas', 'ramen', 'dos equis', 'coors'];
 
 //====================================================
 app.use(bodyParser.json());
