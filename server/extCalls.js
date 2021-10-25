@@ -18,11 +18,11 @@ const axios = require('axios');
 const getImageByString = async (ingredient) => {
   var options = {
     method: 'POST',
-    url: 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/food/detect',
+    url: 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/detect',
     data: 'text=' + ingredient,
     headers: {
-      "X-Mashape-Key": process.env.SPOONACULAR_KEY,
-      "X-Mashape-Host": "spoonacular-recipe-food-nutrition-v1.p.mashape.com",
+      "x-rapidapi-key": process.env.SPOONACULAR_KEY,
+      "x-rapidapi-host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com.com",
       "Content-Type": "application/x-www-form-urlencoded"
     },
   };
@@ -35,7 +35,7 @@ const getImageByString = async (ingredient) => {
 
 const getRecipesByIngredients = (ingredients) => {
   // Turn passed in ingredients into query string
-  const url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?number=20&limitLicense=false&ranking=2&fillIngredients=true&ingredients=';
+  const url = 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients?number=20&limitLicense=false&ranking=2&fillIngredients=true&ingredients=';
   let q = '';
   if (Array.isArray(ingredients)) {
     ingredients.forEach((ingredient, i) => {
@@ -51,8 +51,8 @@ const getRecipesByIngredients = (ingredients) => {
   return axios.get(url + q,
     {
       'headers': {
-        'X-Mashape-Key': process.env.SPOONACULAR_KEY,
-        'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'
+        'x-rapidapi-key': process.env.SPOONACULAR_KEY,
+        'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
       }
     })
     .then((results) => {
@@ -66,14 +66,14 @@ const getRecipesByIngredients = (ingredients) => {
 }
 
 const getRecipeById = (id) => {
-  const firstHalf = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/';
+  const firstHalf = 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/';
   const lastHalf = '/information?includeNutrition=true'
 
   return axios.get(firstHalf + id + lastHalf,
     {
       'headers': {
-        'X-Mashape-Key': process.env.SPOONACULAR_KEY,
-        'X-Mashape-Host': 'spoonacular-recipe-food-nutrition-v1.p.mashape.com'
+        'x-rapidapi-key': process.env.SPOONACULAR_KEY,
+        'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
       }
     })
     .then((results) => {
